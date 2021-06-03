@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 namespace Infrastructure.Enterprise.Interfaces
 {
     /// <summary>
-    /// https://www.zoho.com/books/api/v3/
+    ///     https://www.zoho.com/books/api/v3/
     /// </summary>
     public interface IBookService : IEnterpriseService
     {

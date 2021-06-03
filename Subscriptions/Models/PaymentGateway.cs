@@ -3,9 +3,9 @@
 namespace Infrastructure.Enterprise.Subscriptions.Models
 
 {
-  public class PaymentGateway
-  {
-    [JsonProperty("payment_gateway")]
-    public string Name { get; set; }
-  }
+    public class PaymentGateway
+    {
+        [JsonProperty("payment_gateway")]
+        public string Name { get; set; }
+    }
 }

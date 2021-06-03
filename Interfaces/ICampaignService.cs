@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace Infrastructure.Enterprise.Interfaces
 {
     /// <summary>
-    /// https://www.zoho.com/campaigns/help/developers/
+    ///     https://www.zoho.com/campaigns/help/developers/
     /// </summary>
     public interface ICampaignService : IEnterpriseService
     {

@@ -22,7 +22,7 @@ namespace Infrastructure.Enterprise.Abstractions.Models
 
     public class Response<T> : Response
     {
-        public T @Object { get; set; }
+        public T Object { get; set; }
     }
 }
 

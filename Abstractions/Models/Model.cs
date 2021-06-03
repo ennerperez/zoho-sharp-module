@@ -11,16 +11,15 @@ namespace Infrastructure.Enterprise.Abstractions.Models
 
         public virtual bool Validate()
         {
-            if (Errors != null) 
+            if (Errors != null)
                 Errors.Clear();
-            else 
+            else
                 Errors = new List<string>();
-            
-            var props = this.GetType().GetProperties()
+
+            var props = GetType().GetProperties()
                 .Where(m => m.GetCustomAttributes<JsonRequiredAttribute>().Any())
                 .ToList();
             foreach (var prop in props)
-            {
                 if (prop.CanRead)
                 {
                     var value = prop.GetValue(this);
@@ -30,7 +29,6 @@ namespace Infrastructure.Enterprise.Abstractions.Models
                         return false;
                     }
                 }
-            }
 
             return true;
         }

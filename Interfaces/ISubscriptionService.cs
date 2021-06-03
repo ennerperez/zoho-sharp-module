@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 namespace Infrastructure.Enterprise.Interfaces
 {
     /// <summary>
-    /// https://www.zoho.com/subscriptions/api/v1/
+    ///     https://www.zoho.com/subscriptions/api/v1/
     /// </summary>
     public interface ISubscriptionService : IEnterpriseService
     {

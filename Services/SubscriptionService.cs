@@ -146,10 +146,7 @@ namespace Infrastructure.Enterprise.Services
                 var response = await httpClient.GetAsync("plans");
                 var processResult = await ProcessResponse<Plan[]>(response);
 
-                if (null != processResult.Error)
-                {
-                    throw processResult.Error;
-                }
+                if (null != processResult.Error) throw processResult.Error;
 
                 return processResult.Data.ToList();
             }
