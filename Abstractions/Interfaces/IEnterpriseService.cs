@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Enterprise.Abstractions.Interfaces
+﻿namespace Zoho.Abstractions.Interfaces
 {
     public interface IEnterpriseService
     {

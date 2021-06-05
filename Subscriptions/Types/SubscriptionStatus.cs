@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.Enterprise.Subscriptions.Types
+﻿namespace Zoho.Subscriptions.Types
 {
     // public enum SubscriptionStatus : short
     // {

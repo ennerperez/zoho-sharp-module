@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Infrastructure.Enterprise.Abstractions.Models;
-using Infrastructure.Enterprise.Campaign.Models;
-using Infrastructure.Enterprise.Shared.Models;
+using Zoho.Abstractions.Models;
+using Zoho.Campaign.Models;
+using Zoho.Shared.Models;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Subscriptions.Models
+namespace Zoho.Subscriptions.Models
 {
     public class Invoice : Model
     {

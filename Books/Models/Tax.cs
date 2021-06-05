@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Books.Models
+namespace Zoho.Books.Models
 {
     public class Tax
     {

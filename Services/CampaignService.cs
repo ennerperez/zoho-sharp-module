@@ -4,16 +4,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Infrastructure.Enterprise.Abstractions.Services;
-using Infrastructure.Enterprise.Campaign.Models;
-using Infrastructure.Enterprise.Interfaces;
+using Zoho.Abstractions.Services;
+using Zoho.Campaign.Models;
+using Zoho.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.Enterprise.Services
+namespace Zoho.Services
 {
     public class CampaignService : EnterpriseService, ICampaignService
     {

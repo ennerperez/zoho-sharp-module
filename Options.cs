@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Infrastructure.Enterprise
+namespace Zoho
 {
     public class Options
     {

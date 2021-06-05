@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Abstractions.Models
+namespace Zoho.Abstractions.Models
 {
     public class Response
     {

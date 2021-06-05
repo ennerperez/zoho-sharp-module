@@ -6,14 +6,14 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Infrastructure.Enterprise.Abstractions.Models;
+using Zoho.Abstractions.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.Enterprise.Abstractions.Services
+namespace Zoho.Abstractions.Services
 {
     public abstract class EnterpriseService
     {

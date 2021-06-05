@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Abstractions.Models
+namespace Zoho.Abstractions.Models
 {
     public abstract class Model
     {

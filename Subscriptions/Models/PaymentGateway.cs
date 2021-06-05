@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Subscriptions.Models
+namespace Zoho.Subscriptions.Models
 
 {
     public class PaymentGateway

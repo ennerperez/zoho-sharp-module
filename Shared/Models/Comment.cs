@@ -1,8 +1,8 @@
 ﻿using System;
-using Infrastructure.Enterprise.Abstractions.Models;
+using Zoho.Abstractions.Models;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Shared.Models
+namespace Zoho.Shared.Models
 {
     public class Comment : Model
     {

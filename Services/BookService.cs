@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
-using Infrastructure.Enterprise.Abstractions.Services;
-using Infrastructure.Enterprise.Books.Models;
-using Infrastructure.Enterprise.Interfaces;
+using Zoho.Abstractions.Services;
+using Zoho.Books.Models;
+using Zoho.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.Enterprise.Services
+namespace Zoho.Services
 {
     public class BookService : EnterpriseService, IBookService
     {

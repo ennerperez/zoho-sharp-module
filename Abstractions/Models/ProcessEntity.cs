@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Infrastructure.Enterprise.Abstractions.Models
+namespace Zoho.Abstractions.Models
 {
     public class ProcessEntity<T>
     {

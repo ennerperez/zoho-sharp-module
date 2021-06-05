@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using Infrastructure.Enterprise.Abstractions.Models;
-using Infrastructure.Enterprise.Shared.Models;
+using Zoho.Abstractions.Models;
+using Zoho.Shared.Models;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Books.Models
+namespace Zoho.Books.Models
 {
     public class Bill : Model
     {

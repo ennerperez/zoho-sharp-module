@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Infrastructure.Enterprise.Subscriptions.Models;
+using Zoho.Subscriptions.Models;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Books.Models
+namespace Zoho.Books.Models
 {
     public class PaymentOptions
     {

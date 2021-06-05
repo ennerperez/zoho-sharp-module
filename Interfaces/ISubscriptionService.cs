@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Infrastructure.Enterprise.Abstractions.Interfaces;
-using Infrastructure.Enterprise.Subscriptions.Models;
+using Zoho.Abstractions.Interfaces;
+using Zoho.Subscriptions.Models;
 using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.Enterprise.Interfaces
+namespace Zoho.Interfaces
 {
     /// <summary>
     ///     https://www.zoho.com/subscriptions/api/v1/

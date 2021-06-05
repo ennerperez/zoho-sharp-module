@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Shared.Models
+namespace Zoho.Shared.Models
 {
     public class Address
     {

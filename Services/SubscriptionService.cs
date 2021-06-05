@@ -4,17 +4,17 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Infrastructure.Enterprise.Abstractions.Models;
-using Infrastructure.Enterprise.Abstractions.Services;
-using Infrastructure.Enterprise.Interfaces;
-using Infrastructure.Enterprise.Subscriptions.Models;
+using Zoho.Abstractions.Models;
+using Zoho.Abstractions.Services;
+using Zoho.Interfaces;
+using Zoho.Subscriptions.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.Enterprise.Services
+namespace Zoho.Services
 {
     public class SubscriptionService : EnterpriseService, ISubscriptionService
     {

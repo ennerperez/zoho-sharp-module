@@ -1,7 +1,7 @@
-﻿using Infrastructure.Enterprise.Abstractions.Models;
+﻿using Zoho.Abstractions.Models;
 using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Subscriptions.Models
+namespace Zoho.Subscriptions.Models
 {
     public class Payment : Model
     {

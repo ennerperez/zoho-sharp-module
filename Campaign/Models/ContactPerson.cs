@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Infrastructure.Enterprise.Campaign.Models
+namespace Zoho.Campaign.Models
 {
     public class ContactPerson
     {
