@@ -119,20 +119,26 @@ namespace Infrastructure.Enterprise.Abstractions.Services
                 {
                     var rawErrorResponse = await response.Content.ReadAsStringAsync();
 
+                    if (_options.Debug)
+                    {
+                        if (!string.IsNullOrWhiteSpace(rawErrorResponse))
+                        {
+                            try
+                            {
+                                var path = "responses";
 #if DEBUG
-                    if (!string.IsNullOrWhiteSpace(rawErrorResponse))
-                        try
-                        {
-                            var path = Path.Combine("bin", "Debug", "net5.0", "responses");
-                            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                            var file = Path.Combine(path, DateTime.Now.Ticks + ".json");
-                            File.WriteAllText(file, rawErrorResponse);
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                        }
+                                path = Path.Combine("bin", "Debug", "net5.0", "responses");
 #endif
+                                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                                var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
+                                File.WriteAllText(file, rawErrorResponse);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                            }
+                        }
+                    }
 
                     if (string.IsNullOrWhiteSpace(rawErrorResponse)) throw new InvalidDataException();
 
@@ -154,20 +160,26 @@ namespace Infrastructure.Enterprise.Abstractions.Services
             {
                 var rawResponseContent = await response.Content.ReadAsStringAsync();
 
+                if (_options.Debug)
+                { 
+                    if (!string.IsNullOrWhiteSpace(rawErrorResponse)) 
+                    {
+                        try
+                        {
+                            var path = "responses";
 #if DEBUG
-                if (!string.IsNullOrWhiteSpace(rawResponseContent))
-                    try
-                    {
-                        var path = Path.Combine("bin", "Debug", "net5.0", "responses");
-                        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-                        var file = Path.Combine(path, DateTime.Now.Ticks + ".json");
-                        File.WriteAllText(file, rawResponseContent);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
+                            path = Path.Combine("bin", "Debug", "net5.0", "responses");
 #endif
+                            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                            var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
+                            File.WriteAllText(file, rawErrorResponse);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                    }
+                }
 
                 if (string.IsNullOrWhiteSpace(rawResponseContent)) throw new InvalidDataException();
 
