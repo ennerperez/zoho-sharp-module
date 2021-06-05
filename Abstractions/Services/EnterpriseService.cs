@@ -162,7 +162,7 @@ namespace Infrastructure.Enterprise.Abstractions.Services
 
                 if (_options.Debug)
                 { 
-                    if (!string.IsNullOrWhiteSpace(rawErrorResponse)) 
+                    if (!string.IsNullOrWhiteSpace(rawResponseContent)) 
                     {
                         try
                         {
@@ -172,7 +172,7 @@ namespace Infrastructure.Enterprise.Abstractions.Services
 #endif
                             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                             var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
-                            File.WriteAllText(file, rawErrorResponse);
+                            File.WriteAllText(file, rawResponseContent);
                         }
                         catch (Exception e)
                         {
