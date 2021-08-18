@@ -5,20 +5,18 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Zoho.Abstractions.Models;
-using Zoho.Abstractions.Services;
 using Zoho.Interfaces;
 using Zoho.Subscriptions.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Services
 {
-    public class SubscriptionService : EnterpriseService, ISubscriptionService
+    public class SubscriptionService : ZohoService, ISubscriptionService
     {
-        public SubscriptionService(ILoggerFactory loggerFactory, IOptionsMonitor<Options> optionsMonitor, IConfiguration configuration) : base(loggerFactory, optionsMonitor, configuration)
+        
+        public SubscriptionService(HttpClient httpClient, ILoggerFactory loggerFactory) : base(httpClient, loggerFactory)
         {
         }
 
@@ -36,20 +34,19 @@ namespace Zoho.Services
             if (!validationResult && input.Errors.Any())
                 throw new ArgumentNullException(input.Errors.First());
 
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient("Subscriptions"))
-            {
-                var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
-                var content = new StringContent(data, Encoding.UTF8, "application/json");
+            await GetTokenAsync();
+            SetHttpClient("Subscriptions");
 
-                var response = await httpClient.PostAsync($"subscriptions/{subscriptionId}/charge", content);
-                var processResult = await ProcessResponse<JObject>(response);
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                if (null != processResult.Error)
-                    throw processResult.Error;
+            var response = await _httpClient.PostAsync($"subscriptions/{subscriptionId}/charge", content);
+            var processResult = await ProcessResponse<JObject>(response);
 
-                return processResult.Data;
-            }
+            if (null != processResult.Error)
+                throw processResult.Error;
+
+            return processResult.Data;
         }
 
         public async Task<bool> SetCardCollect(string subscriptionId, Card input)
@@ -57,20 +54,19 @@ namespace Zoho.Services
             if (input == null)
                 throw new ArgumentNullException("input");
 
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient("Subscriptions"))
-            {
-                var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
-                var content = new StringContent(data, Encoding.UTF8, "application/json");
+            await GetTokenAsync();
+            SetHttpClient("Subscriptions");
 
-                var response = await httpClient.PostAsync($"subscriptions/{subscriptionId}/card", content);
-                var processResult = await ProcessResponse<Response>(response);
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                if (null != processResult.Error)
-                    throw processResult.Error;
+            var response = await _httpClient.PostAsync($"subscriptions/{subscriptionId}/card", content);
+            var processResult = await ProcessResponse<Response>(response);
 
-                return true;
-            }
+            if (null != processResult.Error)
+                throw processResult.Error;
+
+            return true;
         }
 
         public async Task<JObject> CreateAsync(Customer input)
@@ -82,20 +78,19 @@ namespace Zoho.Services
             if (!validationResult && input.Errors.Any())
                 throw new ArgumentNullException(input.Errors.First());
 
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient("Subscriptions"))
-            {
-                var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
-                var content = new StringContent(data, Encoding.UTF8, "application/json");
+            await GetTokenAsync();
+            SetHttpClient("Subscriptions");
 
-                var response = await httpClient.PostAsync("customers", content);
-                var processResult = await ProcessResponse<JObject>(response);
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                if (null != processResult.Error)
-                    throw processResult.Error;
+            var response = await _httpClient.PostAsync("customers", content);
+            var processResult = await ProcessResponse<JObject>(response);
 
-                return processResult.Data;
-            }
+            if (null != processResult.Error)
+                throw processResult.Error;
+
+            return processResult.Data;
         }
 
         public async Task<JObject> RequestPaymentMethod(string customerId)
@@ -103,19 +98,18 @@ namespace Zoho.Services
             if (customerId == null)
                 throw new ArgumentNullException("customerId");
 
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient("Subscriptions"))
-            {
-                //var data = JsonConvert.SerializeObject(customerId, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+            await GetTokenAsync();
+            SetHttpClient("Subscriptions");
 
-                var response = await httpClient.GetAsync($"customers/{customerId}/requestpaymentmethod");
-                var processResult = await ProcessResponse<JObject>(response);
+            //var data = JsonConvert.SerializeObject(customerId, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
 
-                if (null != processResult.Error)
-                    throw processResult.Error;
+            var response = await _httpClient.GetAsync($"customers/{customerId}/requestpaymentmethod");
+            var processResult = await ProcessResponse<JObject>(response);
 
-                return processResult.Data;
-            }
+            if (null != processResult.Error)
+                throw processResult.Error;
+
+            return processResult.Data;
         }
 
         public async Task<List<Card>> GetCards(string customerId)
@@ -123,33 +117,31 @@ namespace Zoho.Services
             if (customerId == null)
                 throw new ArgumentNullException("customerId");
 
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient("Subscriptions"))
-            {
-                //var data = JsonConvert.SerializeObject(customerId, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+            await GetTokenAsync();
+            SetHttpClient("Subscriptions");
 
-                var response = await httpClient.GetAsync($"customers/{customerId}/cards");
-                var processResult = await ProcessResponse<Card[]>(response);
+            //var data = JsonConvert.SerializeObject(customerId, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
 
-                if (null != processResult.Error)
-                    throw processResult.Error;
+            var response = await _httpClient.GetAsync($"customers/{customerId}/cards");
+            var processResult = await ProcessResponse<Card[]>(response);
 
-                return processResult.Data.ToList();
-            }
+            if (null != processResult.Error)
+                throw processResult.Error;
+
+            return processResult.Data.ToList();
         }
 
         public async Task<List<Plan>> GetPlans()
         {
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient("Subscriptions"))
-            {
-                var response = await httpClient.GetAsync("plans");
-                var processResult = await ProcessResponse<Plan[]>(response);
+            await GetTokenAsync();
+            SetHttpClient("Subscriptions");
 
-                if (null != processResult.Error) throw processResult.Error;
+            var response = await _httpClient.GetAsync("plans");
+            var processResult = await ProcessResponse<Plan[]>(response);
 
-                return processResult.Data.ToList();
-            }
+            if (null != processResult.Error) throw processResult.Error;
+
+            return processResult.Data.ToList();
         }
 
         public string GetOption(string key)

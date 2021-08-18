@@ -6,28 +6,40 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Zoho.Abstractions.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Zoho.Abstractions.Models;
 
-namespace Zoho.Abstractions.Services
+namespace Zoho.Services
 {
-    public abstract class EnterpriseService
+    public class ZohoService
     {
-        public static string AuthToken;
-        private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
-        private readonly Options _options;
-        private DateTime _expiresIn;
 
-        public EnterpriseService(ILoggerFactory loggerFactory, IOptionsMonitor<Options> optionsMonitor, IConfiguration configuration)
+        protected readonly HttpClient _httpClient;
+        //private readonly Utf8JsonSerializer _jsonSerializer;
+
+        private DateTime _expiresIn;
+        private string _authToken;
+
+        internal DateTime ExpiresIn => _expiresIn;
+        internal string AuthToken => _authToken;
+
+        internal HttpClient HttpClient => _httpClient;
+
+        public ZohoService(HttpClient httpClient, ILoggerFactory loggerFactory) //, Utf8JsonSerializer jsonSerializer
         {
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            //_jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _logger = loggerFactory.CreateLogger(GetType());
-            _options = optionsMonitor.CurrentValue;
-            _configuration = configuration;
+        }
+
+        private Options _options;
+
+        public void Configure(Options options)
+        {
+            _options = options;
         }
 
         public string GetOption(string module, string key)
@@ -39,13 +51,41 @@ namespace Zoho.Abstractions.Services
             return null;
         }
 
-        public async Task RefreshTokenAsync()
+        public void SetHttpClient(string module, bool isPdf = false)
         {
-            if (!string.IsNullOrEmpty(AuthToken) && DateTime.Now < _expiresIn) return;
+            var apiBaseUrl = _options.Modules[module].Url;
+            var organizationId = _options.OrganizationId;
 
-            var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri(_options.Modules["Accounts"].Url);
-            httpClient.DefaultRequestHeaders.Accept.Clear();
+            //var _httpClient = new HttpClient();
+
+            if (_httpClient.DefaultRequestHeaders.CacheControl == null) _httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
+
+            _httpClient.DefaultRequestHeaders.CacheControl.NoCache = true;
+            _httpClient.DefaultRequestHeaders.IfModifiedSince = DateTime.UtcNow;
+            _httpClient.DefaultRequestHeaders.CacheControl.NoStore = true;
+
+            _httpClient.Timeout = new TimeSpan(0, 0, 30);
+
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ? "application/pdf" : "application/json"));
+
+            // Sanity patch for base URL to end with /
+            if (!apiBaseUrl.EndsWith("/"))
+                apiBaseUrl = apiBaseUrl + "/";
+
+            _httpClient.BaseAddress = new Uri(apiBaseUrl);
+
+            _httpClient.DefaultRequestHeaders.Add("authorization", string.Format(CultureInfo.InvariantCulture, "Zoho-oauthtoken {0}", AuthToken));
+            _httpClient.DefaultRequestHeaders.Add("x-com-zoho-subscriptions-organizationid", organizationId);
+        }
+
+        public async Task GetTokenAsync()
+        {
+            if (!string.IsNullOrEmpty(_authToken) && DateTime.Now < _expiresIn) return;
+
+            _httpClient.DefaultRequestHeaders.Accept.Clear();
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
 
             using (var content = new MultipartFormDataContent())
             {
@@ -54,17 +94,19 @@ namespace Zoho.Abstractions.Services
                 content.Add(new StringContent(_options.ClientSecret), "client_secret");
                 content.Add(new StringContent("refresh_token"), "grant_type");
 
-                var result = await httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
+                var result = await _httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
                 if (result.IsSuccessStatusCode)
                 {
                     var data = await result.Content.ReadAsStringAsync();
                     if (!string.IsNullOrWhiteSpace(data))
                     {
                         var jobject = JObject.Parse(data);
-                        AuthToken = jobject.GetValue("access_token")?.ToString();
-                        if (_configuration["AppSettings:Environment"] == "QA") _logger.LogInformation($"AuthToken: {AuthToken}");
+                        _authToken = jobject.GetValue("access_token")?.ToString();
+#if DEBUG
+                        _logger.LogInformation($"AuthToken: {_authToken}");
+#endif
 
-                        if (!string.IsNullOrWhiteSpace(AuthToken))
+                        if (!string.IsNullOrWhiteSpace(_authToken))
                         {
                             var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? "3600");
                             _expiresIn = DateTime.Now.AddMinutes(expiresIn);
@@ -73,39 +115,9 @@ namespace Zoho.Abstractions.Services
                 }
                 else
                 {
-                    throw new UnauthorizedAccessException("Unable to refresh token.");
+                    throw new UnauthorizedAccessException("Unable to get token.");
                 }
             }
-        }
-
-        public HttpClient GetHttpClient(string module, bool isPdf = false)
-        {
-            var apiBaseUrl = _options.Modules[module].Url;
-            var organizationId = _options.OrganizationId;
-
-            var httpClient = new HttpClient();
-
-            if (httpClient.DefaultRequestHeaders.CacheControl == null) httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
-
-            httpClient.DefaultRequestHeaders.CacheControl.NoCache = true;
-            httpClient.DefaultRequestHeaders.IfModifiedSince = DateTime.UtcNow;
-            httpClient.DefaultRequestHeaders.CacheControl.NoStore = true;
-
-            httpClient.Timeout = new TimeSpan(0, 0, 30);
-
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ? "application/pdf" : "application/json"));
-
-            // Sanity patch for base URL to end with /
-            if (!apiBaseUrl.EndsWith("/"))
-                apiBaseUrl = apiBaseUrl + "/";
-
-            httpClient.BaseAddress = new Uri(apiBaseUrl);
-
-            httpClient.DefaultRequestHeaders.Add("authorization", string.Format(CultureInfo.InvariantCulture, "Zoho-oauthtoken {0}", AuthToken));
-            httpClient.DefaultRequestHeaders.Add("x-com-zoho-subscriptions-organizationid", organizationId);
-
-            return httpClient;
         }
 
         public async Task<ProcessEntity<T>> ProcessResponse<T>(HttpResponseMessage response, string subnode = "")
@@ -146,23 +158,23 @@ namespace Zoho.Abstractions.Services
                 }
                 catch (Exception exception)
                 {
-                    return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
+                    return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
                 }
 
-                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred")};
+                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred") };
 
-                return new ProcessEntity<T> {Error = new InvalidOperationException(errorResponse.Message)};
+                return new ProcessEntity<T> { Error = new InvalidOperationException(errorResponse.Message) };
             }
 
-            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> {Data = (T) (object) response.IsSuccessStatusCode};
+            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> { Data = (T)(object)response.IsSuccessStatusCode };
 
             try
             {
                 var rawResponseContent = await response.Content.ReadAsStringAsync();
 
                 if (_options.Debug)
-                { 
-                    if (!string.IsNullOrWhiteSpace(rawResponseContent)) 
+                {
+                    if (!string.IsNullOrWhiteSpace(rawResponseContent))
                     {
                         try
                         {
@@ -189,15 +201,15 @@ namespace Zoho.Abstractions.Services
                     if (innerNodeContent.ContainsKey(subnode) && innerNodeContent[subnode] != null)
                     {
                         var data = innerNodeContent[subnode].ToObject<T>();
-                        return new ProcessEntity<T> {Data = data};
+                        return new ProcessEntity<T> { Data = data };
                     }
                 }
 
-                return new ProcessEntity<T> {Data = JsonConvert.DeserializeObject<T>(rawResponseContent)};
+                return new ProcessEntity<T> { Data = JsonConvert.DeserializeObject<T>(rawResponseContent) };
             }
             catch (Exception exception)
             {
-                return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
+                return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
             }
         }
 
@@ -205,33 +217,31 @@ namespace Zoho.Abstractions.Services
         {
             if (input == null) throw new ArgumentNullException("input");
 
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient(module))
-            {
-                var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
-                var content = new StringContent(data, Encoding.UTF8, "application/json");
+            await GetTokenAsync();
+            SetHttpClient(module);
 
-                var response = await httpClient.PostAsync(url, content);
-                var processResult = await ProcessResponse<JObject>(response);
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                if (null != processResult.Error) throw processResult.Error;
+            var response = await _httpClient.PostAsync(url, content);
+            var processResult = await ProcessResponse<JObject>(response);
 
-                return processResult.Data;
-            }
+            if (null != processResult.Error) throw processResult.Error;
+
+            return processResult.Data;
         }
 
         public async Task<JObject> InvokeGetAsync(string module, string url)
         {
-            await RefreshTokenAsync();
-            using (var httpClient = GetHttpClient(module))
-            {
-                var response = await httpClient.GetAsync(url);
-                var processResult = await ProcessResponse<JObject>(response);
+            await GetTokenAsync();
+            SetHttpClient(module);
+            
+            var response = await _httpClient.GetAsync(url);
+            var processResult = await ProcessResponse<JObject>(response);
 
-                if (null != processResult.Error) throw processResult.Error;
+            if (null != processResult.Error) throw processResult.Error;
 
-                return processResult.Data;
-            }
+            return processResult.Data;
         }
     }
 }

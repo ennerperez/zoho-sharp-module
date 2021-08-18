@@ -1,17 +1,15 @@
-﻿using System.Threading.Tasks;
-using Zoho.Abstractions.Services;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
 using Zoho.Books.Models;
 using Zoho.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Services
 {
-    public class BookService : EnterpriseService, IBookService
+    public class BookService : ZohoService, IBookService
     {
-        public BookService(ILoggerFactory loggerFactory, IOptionsMonitor<Options> optionsMonitor, IConfiguration configuration) : base(loggerFactory, optionsMonitor, configuration)
+        public BookService(HttpClient httpClient, ILoggerFactory loggerFactory) : base(httpClient, loggerFactory)
         {
         }
 
