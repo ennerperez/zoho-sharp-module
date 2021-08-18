@@ -15,7 +15,6 @@ namespace Zoho.Services
 {
     public class SubscriptionService : ZohoService, ISubscriptionService
     {
-        
         public SubscriptionService(HttpClient httpClient, ILoggerFactory loggerFactory) : base(httpClient, loggerFactory)
         {
         }

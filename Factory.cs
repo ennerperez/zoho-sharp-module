@@ -20,7 +20,7 @@ namespace Zoho
         public async Task<ZohoService> CreateAsync()
         {
             var _client = _serviceProvider.GetRequiredService<ZohoService>();
-            _client.Configure(_options); 
+            _client.Configure(_options);
             await _client.GetTokenAsync();
             return _client;
         }
