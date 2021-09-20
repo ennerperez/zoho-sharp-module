@@ -14,7 +14,6 @@ namespace Zoho
             _campaignService = campaignService;
             _subscriptionService = subscriptionService;
         }
-
         public IBookService Book => _bookService;
         public ICampaignService Campaign => _campaignService;
         public ISubscriptionService Subscription => _subscriptionService;

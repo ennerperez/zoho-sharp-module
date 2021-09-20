@@ -1,7 +1,9 @@
-﻿namespace Zoho.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Zoho.Interfaces
 {
     public interface IZohoService
     {
-        string GetOption(string key);
+        Task<string> GetOption(string key);
     }
 }

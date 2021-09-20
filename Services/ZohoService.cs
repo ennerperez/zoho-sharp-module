@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
@@ -18,7 +19,9 @@ namespace Zoho.Services
         private readonly ILogger _logger;
 
         protected readonly HttpClient _httpClient;
+
         //private readonly Utf8JsonSerializer _jsonSerializer;
+        private readonly IServiceProvider _serviceProvider;
 
         private DateTime _expiresIn;
         private string _authToken;
@@ -28,8 +31,10 @@ namespace Zoho.Services
 
         internal HttpClient HttpClient => _httpClient;
 
-        public ZohoService(HttpClient httpClient, ILoggerFactory loggerFactory) //, Utf8JsonSerializer jsonSerializer
+        public ZohoService(IServiceProvider serviceProvider, IOptionsMonitor<Options> optionsMonitor, HttpClient httpClient, ILoggerFactory loggerFactory) //, Utf8JsonSerializer jsonSerializer
         {
+            _serviceProvider = serviceProvider;
+            _options = optionsMonitor.CurrentValue;
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             //_jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
             _logger = loggerFactory.CreateLogger(GetType());
@@ -51,29 +56,19 @@ namespace Zoho.Services
             return null;
         }
 
-        public void SetHttpClient(string module, bool isPdf = false)
+        public void SetHttpClient(bool isPdf = false)
         {
-            var apiBaseUrl = _options.Modules[module].Url;
             var organizationId = _options.OrganizationId;
 
-            //var _httpClient = new HttpClient();
-
-            if (_httpClient.DefaultRequestHeaders.CacheControl == null) _httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
+            if (_httpClient.DefaultRequestHeaders.CacheControl == null)
+                _httpClient.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
 
             _httpClient.DefaultRequestHeaders.CacheControl.NoCache = true;
             _httpClient.DefaultRequestHeaders.IfModifiedSince = DateTime.UtcNow;
             _httpClient.DefaultRequestHeaders.CacheControl.NoStore = true;
 
-            _httpClient.Timeout = new TimeSpan(0, 0, 30);
-
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ? "application/pdf" : "application/json"));
-
-            // Sanity patch for base URL to end with /
-            if (!apiBaseUrl.EndsWith("/"))
-                apiBaseUrl = apiBaseUrl + "/";
-
-            _httpClient.BaseAddress = new Uri(apiBaseUrl);
 
             _httpClient.DefaultRequestHeaders.Add("authorization", string.Format(CultureInfo.InvariantCulture, "Zoho-oauthtoken {0}", AuthToken));
             _httpClient.DefaultRequestHeaders.Add("x-com-zoho-subscriptions-organizationid", organizationId);
@@ -215,16 +210,30 @@ namespace Zoho.Services
 
         public async Task<JObject> InvokePostAsync<TInput>(string module, string url, TInput input) where TInput : Model
         {
+            return await InvokePostAsync<TInput, JObject>(module, url, input);
+        }
+
+        public async Task<TOutput> InvokePostAsync<TInput, TOutput>(string module, string url, TInput input) where TInput : Model
+        {
             if (input == null) throw new ArgumentNullException("input");
 
             await GetTokenAsync();
-            SetHttpClient(module);
+            //SetHttpClient();
+
+            // Sanity patch for base URL to end with /
+            var apiBaseUrl = _options.Modules[module].Url;
+            if (!apiBaseUrl.EndsWith("/"))
+                apiBaseUrl = apiBaseUrl + "/";
+
+
+            url = $"{apiBaseUrl}{url}";
+            //_httpClient.BaseAddress = new Uri(apiBaseUrl);
 
             var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(url, content);
-            var processResult = await ProcessResponse<JObject>(response);
+            var processResult = await ProcessResponse<TOutput>(response);
 
             if (null != processResult.Error) throw processResult.Error;
 
@@ -233,11 +242,23 @@ namespace Zoho.Services
 
         public async Task<JObject> InvokeGetAsync(string module, string url)
         {
+            return await InvokeGetAsync<JObject>(module, url);
+        }
+
+        public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url)
+        {
             await GetTokenAsync();
-            SetHttpClient(module);
+            //SetHttpClient();
+
+            // Sanity patch for base URL to end with /
+            var apiBaseUrl = _options.Modules[module].Url;
+            if (!apiBaseUrl.EndsWith("/"))
+                apiBaseUrl = apiBaseUrl + "/";
+
+            url = $"{apiBaseUrl}{url}";
 
             var response = await _httpClient.GetAsync(url);
-            var processResult = await ProcessResponse<JObject>(response);
+            var processResult = await ProcessResponse<TOutput>(response);
 
             if (null != processResult.Error) throw processResult.Error;
 

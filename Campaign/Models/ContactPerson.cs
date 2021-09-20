@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
+using Zoho.Abstractions.Models;
 
 namespace Zoho.Campaign.Models
 {
-    public class ContactPerson
+    public class ContactPerson : Model
     {
         [JsonProperty("contactperson_id")]
         public string ContactPersonId { get; set; }

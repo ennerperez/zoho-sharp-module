@@ -1,31 +1,39 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Zoho.Books.Models;
 using Zoho.Interfaces;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Services
 {
-    public class BookService : ZohoService, IBookService
+    public class BookService : IBookService
     {
-        public BookService(HttpClient httpClient, ILoggerFactory loggerFactory) : base(httpClient, loggerFactory)
+        private readonly Factory _factory;
+
+        public BookService(Factory factory)
         {
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         public async Task<JObject> CreateBillAsync(Bill input)
         {
-            return await InvokePostAsync("Books", "bills", input);
+            var client = await _factory.CreateAsync();
+            return await client.InvokePostAsync("Books", "bills", input);
         }
 
         public async Task<JObject> CreateInvoiceAsync(Invoice input)
         {
-            return await InvokePostAsync("Books", "invoices", input);
+            var client = await _factory.CreateAsync();
+            return await client.InvokePostAsync("Books", "invoices", input);
         }
 
-        public string GetOption(string key)
+        public async Task<string> GetOption(string key)
         {
-            return base.GetOption("Books", key);
+            var client = await _factory.CreateAsync();
+            return client.GetOption("Books", key);
         }
     }
 }

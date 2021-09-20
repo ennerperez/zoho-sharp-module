@@ -10,6 +10,7 @@ namespace Zoho
         public static IServiceCollection AddZohoServices(this IServiceCollection services, Action<Options> configureOptions = null)
         {
             services.AddHttpClient<ZohoService>("ZohoService");
+            services.AddSingleton<Factory>().Configure(configureOptions);
 
             services.AddSingleton<IBookService, BookService>().Configure(configureOptions);
             services.AddSingleton<ICampaignService, CampaignService>().Configure(configureOptions);
