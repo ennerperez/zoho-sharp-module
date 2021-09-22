@@ -5,8 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Zoho.Interfaces;
 using Zoho.Subscriptions.Models;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Services

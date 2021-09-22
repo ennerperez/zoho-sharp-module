@@ -6,8 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Zoho.Campaign.Models;
 using Zoho.Interfaces;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
