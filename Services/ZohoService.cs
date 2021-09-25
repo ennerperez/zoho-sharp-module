@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
+// ReSharper disable RedundantAssignment
 
 namespace Zoho.Services
 {
@@ -21,19 +22,17 @@ namespace Zoho.Services
         protected readonly HttpClient _httpClient;
 
         //private readonly Utf8JsonSerializer _jsonSerializer;
-        private readonly IServiceProvider _serviceProvider;
 
-        private DateTime _expiresIn;
-        private string _authToken;
+        private static DateTime _expiresIn;
+        private static string _authToken;
 
-        internal DateTime ExpiresIn => _expiresIn;
-        internal string AuthToken => _authToken;
+        internal static DateTime ExpiresIn => _expiresIn;
+        internal static string AuthToken => _authToken;
 
         internal HttpClient HttpClient => _httpClient;
 
-        public ZohoService(IServiceProvider serviceProvider, IOptionsMonitor<Options> optionsMonitor, HttpClient httpClient, ILoggerFactory loggerFactory) //, Utf8JsonSerializer jsonSerializer
+        public ZohoService(IOptionsMonitor<Options> optionsMonitor, HttpClient httpClient, ILoggerFactory loggerFactory) //, Utf8JsonSerializer jsonSerializer
         {
-            _serviceProvider = serviceProvider;
             _options = optionsMonitor.CurrentValue;
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             //_jsonSerializer = jsonSerializer ?? throw new ArgumentNullException(nameof(jsonSerializer));
@@ -132,6 +131,7 @@ namespace Zoho.Services
                         {
                             try
                             {
+                                // ReSharper disable once RedundantAssignment
                                 var path = "responses";
 #if DEBUG
                                 path = Path.Combine("bin", "Debug", "net5.0", "responses");
@@ -193,7 +193,7 @@ namespace Zoho.Services
                 if (!string.IsNullOrWhiteSpace(subnode))
                 {
                     var innerNodeContent = JsonConvert.DeserializeObject<JObject>(rawResponseContent);
-                    if (innerNodeContent.ContainsKey(subnode) && innerNodeContent[subnode] != null)
+                    if (innerNodeContent != null && innerNodeContent.ContainsKey(subnode) && innerNodeContent[subnode] != null)
                     {
                         var data = innerNodeContent[subnode].ToObject<T>();
                         return new ProcessEntity<T> { Data = data };
@@ -208,17 +208,17 @@ namespace Zoho.Services
             }
         }
 
-        public async Task<JObject> InvokePostAsync<TInput>(string module, string url, TInput input) where TInput : Model
+        public async Task<JObject> InvokePostAsync(string module, string url, object input)
         {
-            return await InvokePostAsync<TInput, JObject>(module, url, input);
+            return await InvokePostAsync<JObject>(module, url, input);
         }
 
-        public async Task<TOutput> InvokePostAsync<TInput, TOutput>(string module, string url, TInput input) where TInput : Model
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input)
         {
             if (input == null) throw new ArgumentNullException("input");
 
             await GetTokenAsync();
-            //SetHttpClient();
+            SetHttpClient();
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;

@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Zoho.Books.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Interfaces
@@ -9,7 +8,7 @@ namespace Zoho.Interfaces
     /// </summary>
     public interface IBookService : IZohoService
     {
-        Task<JObject> CreateBillAsync(Bill input);
-        Task<JObject> CreateInvoiceAsync(Invoice input);
+        Task<JObject> CreateBillAsync(JObject input);
+        Task<JObject> CreateInvoiceAsync(JObject input);
     }
 }

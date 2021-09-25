@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Zoho.Books.Models;
 using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
 
@@ -16,13 +14,13 @@ namespace Zoho.Services
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
-        public async Task<JObject> CreateBillAsync(Bill input)
+        public async Task<JObject> CreateBillAsync(JObject input)
         {
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Books", "bills", input);
         }
 
-        public async Task<JObject> CreateInvoiceAsync(Invoice input)
+        public async Task<JObject> CreateInvoiceAsync(JObject input)
         {
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Books", "invoices", input);

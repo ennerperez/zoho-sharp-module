@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Zoho.Interfaces;
-using Zoho.Subscriptions.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Services
@@ -19,20 +17,20 @@ namespace Zoho.Services
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
         
-        public async Task<JObject> CreateAsync(Subscription input)
+        public async Task<JObject> CreateAsync(object input)
         {
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Subscriptions", "subscriptions", input);
         }
 
-        public async Task<JObject> AddChargeAsync(string subscriptionId, Charge input)
+        public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
         {
             if (input == null)
                 throw new ArgumentNullException("input");
 
-            var validationResult = input.Validate();
-            if (!validationResult && input.Errors.Any())
-                throw new ArgumentNullException(input.Errors.First());
+            // var validationResult = input.Validate();
+            // if (!validationResult && input.Errors.Any())
+            //     throw new ArgumentNullException(input.Errors.First());
 
             var client = await _factory.CreateAsync();
 
@@ -51,7 +49,7 @@ namespace Zoho.Services
             // return processResult.Data;
         }
 
-        public async Task<bool> SetCardCollect(string subscriptionId, Card input)
+        public async Task<bool> SetCardCollect(string subscriptionId, JObject input)
         {
             if (input == null)
                 throw new ArgumentNullException("input");
@@ -72,37 +70,38 @@ namespace Zoho.Services
             return true;
         }
 
-        public async Task<JObject> CreateAsync(Customer input)
-        {
-            if (input == null)
-                throw new ArgumentNullException("input");
 
-            var validationResult = input.Validate();
-            if (!validationResult && input.Errors.Any())
-                throw new ArgumentNullException(input.Errors.First());
-
-            var client = await _factory.CreateAsync();
-            
-//Subscriptions
-
-            var response = await client.InvokePostAsync("Subscriptions", "customers", input);
-            
-            if (null != response && response.Property("Error") != null)
-                throw new Exception(response.Property("Error")?.Value.ToString());
-            
-            return response;
-
-            // var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            // var content = new StringContent(data, Encoding.UTF8, "application/json");
-            //
-            // var response = await _httpClient.PostAsync("customers", content);
-            // var processResult = await ProcessResponse<JObject>(response);
-            //
-            // if (null != processResult.Error)
-            //     throw processResult.Error;
-            //
-            // return processResult.Data;
-        }
+        //         public async Task<JObject> CreateAsync(JObject input)
+//         {
+//             if (input == null)
+//                 throw new ArgumentNullException("input");
+//
+//             // var validationResult = input.Validate();
+//             // if (!validationResult && input.Errors.Any())
+//             //     throw new ArgumentNullException(input.Errors.First());
+//
+//             var client = await _factory.CreateAsync();
+//             
+// //Subscriptions
+//
+//             var response = await client.InvokePostAsync("Subscriptions", "customers", input);
+//             
+//             if (null != response && response.Property("Error") != null)
+//                 throw new Exception(response.Property("Error")?.Value.ToString());
+//             
+//             return response;
+//
+//             // var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+//             // var content = new StringContent(data, Encoding.UTF8, "application/json");
+//             //
+//             // var response = await _httpClient.PostAsync("customers", content);
+//             // var processResult = await ProcessResponse<JObject>(response);
+//             //
+//             // if (null != processResult.Error)
+//             //     throw processResult.Error;
+//             //
+//             // return processResult.Data;
+//         }
 
         public async Task<JObject> RequestPaymentMethod(string customerId)
         {
@@ -129,14 +128,14 @@ namespace Zoho.Services
             //return processResult.Data;
         }
 
-        public async Task<List<Card>> GetCards(string customerId)
+        public async Task<List<JObject>> GetCards(string customerId)
         {
             if (customerId == null)
                 throw new ArgumentNullException("customerId");
 
             var client = await _factory.CreateAsync();
             
-            var response = await client.InvokeGetAsync<Card[]>("Subscriptions", $"customers/{customerId}/cards");
+            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"customers/{customerId}/cards");
             
             // if (null != response && response.Property("Error") != null)
             //     throw new Exception(response.Property("Error")?.Value.ToString());
@@ -154,11 +153,11 @@ namespace Zoho.Services
             // return processResult.Data.ToList();
         }
 
-        public async Task<List<Plan>> GetPlans()
+        public async Task<List<JObject>> GetPlans()
         {
             var client = await _factory.CreateAsync();
             
-            var response = await client.InvokeGetAsync<Plan[]>("Subscriptions", $"plans");
+            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"plans");
 
             return response.ToList();
 

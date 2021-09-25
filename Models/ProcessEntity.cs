@@ -6,5 +6,6 @@ namespace Zoho.Abstractions.Models
     {
         public Exception Error { get; set; }
         public T Data { get; set; }
+
     }
 }

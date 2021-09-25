@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Zoho.Campaign.Models;
 using Zoho.Interfaces;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
 
@@ -21,7 +17,7 @@ namespace Zoho.Services
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
-        public async Task<JObject> CreateContactAsync(ContactPerson input, string campaignKey)
+        public async Task<JObject> CreateContactAsync(JObject input, string campaignKey)
         {
             if (input == null) throw new ArgumentNullException("input");
 
@@ -39,7 +35,7 @@ namespace Zoho.Services
             // return processResult.Data;
         }
 
-        public async Task<List<Subscriber>> GetListSubscribersAsync(string designation)
+        public async Task<List<JObject>> GetListSubscribersAsync(string designation)
         {
             if (string.IsNullOrWhiteSpace(designation)) throw new ArgumentNullException("designation");
 
@@ -50,12 +46,12 @@ namespace Zoho.Services
             var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active";
             //var response = await _httpClient.GetAsync(endpoint);
 
-            var response = await client.InvokeGetAsync<List<Subscriber>>("Campaigns", endpoint);
+            var response = await client.InvokeGetAsync<List<JObject>>("Campaigns", endpoint);
 
             return response;
         }
 
-        public async Task<Subscriber> GetSubscriberAsync(string designation, string email)
+        public async Task<JObject> GetSubscriberAsync(string designation, string email)
         {
             if (string.IsNullOrWhiteSpace(designation)) throw new ArgumentNullException("designation");
             if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException("email");
@@ -66,14 +62,14 @@ namespace Zoho.Services
             //getlistsubscribers?resfmt=XML&listkey=[listkey]&sort=[asc/desc]&fromindex=[number]&range=[number]&status=[active/recent/mostrecent/unsub/bounce]
             var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active";
 
-            var response = await client.InvokeGetAsync<Response<Subscriber[]>>("Campaigns", endpoint);
+            var response = await client.InvokeGetAsync<Response<JObject[]>>("Campaigns", endpoint);
 
             // var response = await _httpClient.GetAsync(endpoint);
             // var processResult = await ProcessResponse<Subscriber[]>(response, "list_of_details");
             //
             // if (null != processResult.Error) throw processResult.Error;
             //
-            return response.Object.FirstOrDefault(m => m.ContactEmail.ToLower().Trim() == email.ToLower().Trim());
+            return response.Object.FirstOrDefault(m => m.Value<string>("ContactEmail")?.ToLower().Trim() == email.ToLower().Trim());
         }
 
         public async Task<string> GetOption(string key)

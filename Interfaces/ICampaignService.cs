@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Zoho.Campaign.Models;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Interfaces
@@ -10,8 +9,8 @@ namespace Zoho.Interfaces
     /// </summary>
     public interface ICampaignService : IZohoService
     {
-        Task<JObject> CreateContactAsync(ContactPerson input, string campaignKey);
-        Task<List<Subscriber>> GetListSubscribersAsync(string designation);
-        Task<Subscriber> GetSubscriberAsync(string designation, string email);
+        Task<JObject> CreateContactAsync(JObject input, string campaignKey);
+        Task<List<JObject>> GetListSubscribersAsync(string designation);
+        Task<JObject> GetSubscriberAsync(string designation, string email);
     }
 }
