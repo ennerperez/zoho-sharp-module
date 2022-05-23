@@ -13,13 +13,14 @@ using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
 // ReSharper disable RedundantAssignment
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Services
 {
     public class ZohoService
     {
         private readonly ILogger _logger;
 
-        protected readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         //private readonly Utf8JsonSerializer _jsonSerializer;
 
@@ -97,7 +98,7 @@ namespace Zoho.Services
                         var jobject = JObject.Parse(data);
                         _authToken = jobject.GetValue("access_token")?.ToString();
 #if DEBUG
-                        _logger.LogInformation($"AuthToken: {_authToken}");
+                        _logger.LogInformation("AuthToken: {AuthToken}", _authToken);
 #endif
 
                         if (!string.IsNullOrWhiteSpace(_authToken))

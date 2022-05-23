@@ -3,6 +3,7 @@ using Zoho.Interfaces;
 using Zoho.Services;
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho
 {
     public static class Extensions

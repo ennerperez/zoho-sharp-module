@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Services
 {
     public class SubscriptionService : ISubscriptionService

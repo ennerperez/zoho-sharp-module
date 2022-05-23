@@ -1,5 +1,6 @@
 using Zoho.Interfaces;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho
 {
     public class Wrapper

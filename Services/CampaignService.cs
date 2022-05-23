@@ -6,6 +6,7 @@ using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Services
 {
     public class CampaignService : ICampaignService
