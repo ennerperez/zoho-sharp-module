@@ -175,7 +175,7 @@ namespace Zoho.Services
                         {
                             var path = "responses";
 #if DEBUG
-                            path = Path.Combine("bin", "Debug", "net5.0", "responses");
+                            path = Path.Combine("bin", "Debug", "net6.0", "responses");
 #endif
                             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                             var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
