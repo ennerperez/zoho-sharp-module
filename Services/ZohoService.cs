@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
+
 // ReSharper disable RedundantAssignment
 
 // ReSharper disable once CheckNamespace
@@ -135,7 +136,7 @@ namespace Zoho.Services
                                 // ReSharper disable once RedundantAssignment
                                 var path = "responses";
 #if DEBUG
-                                path = Path.Combine("bin", "Debug", "net5.0", "responses");
+                                path = Path.Combine("bin", "Debug", "responses");
 #endif
                                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                                 var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
@@ -176,7 +177,7 @@ namespace Zoho.Services
                         {
                             var path = "responses";
 #if DEBUG
-                            path = Path.Combine("bin", "Debug", "net6.0", "responses");
+                            path = Path.Combine("bin", "Debug", "responses");
 #endif
                             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                             var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
