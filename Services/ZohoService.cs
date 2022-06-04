@@ -79,9 +79,18 @@ namespace Zoho.Services
         {
             if (!string.IsNullOrEmpty(_authToken) && DateTime.Now < _expiresIn) return;
 
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
+            var authFilename = $"{_options.ClientSecret}.token";
+            if (File.Exists(authFilename) && (DateTime.Now - File.GetLastWriteTime(authFilename)).TotalHours < 1)
+            {
+                _authToken = File.ReadAllText(authFilename);
+                return;
+            }
+
+            var httpClient = new HttpClient();
+
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
 
             using (var content = new MultipartFormDataContent())
             {
@@ -90,7 +99,7 @@ namespace Zoho.Services
                 content.Add(new StringContent(_options.ClientSecret), "client_secret");
                 content.Add(new StringContent("refresh_token"), "grant_type");
 
-                var result = await _httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
+                var result = await httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
                 if (result.IsSuccessStatusCode)
                 {
                     var data = await result.Content.ReadAsStringAsync();
@@ -106,6 +115,7 @@ namespace Zoho.Services
                         {
                             var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? "3600");
                             _expiresIn = DateTime.Now.AddMinutes(expiresIn);
+                            File.WriteAllText(authFilename, _authToken);
                         }
                     }
                 }
@@ -250,7 +260,7 @@ namespace Zoho.Services
         public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url)
         {
             await GetTokenAsync();
-            //SetHttpClient();
+            SetHttpClient();
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;

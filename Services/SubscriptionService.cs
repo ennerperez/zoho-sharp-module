@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
+using Zoho.Abstractions.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -29,25 +30,10 @@ namespace Zoho.Services
             if (input == null)
                 throw new ArgumentNullException("input");
 
-            // var validationResult = input.Validate();
-            // if (!validationResult && input.Errors.Any())
-            //     throw new ArgumentNullException(input.Errors.First());
-
             var client = await _factory.CreateAsync();
 
             var response = await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/charge", input);
             return response;
-
-            // var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            // var content = new StringContent(data, Encoding.UTF8, "application/json");
-            //
-            // var response = await _httpClient.PostAsync($"subscriptions/{subscriptionId}/charge", content);
-            // var processResult = await ProcessResponse<JObject>(response);
-            //
-            // if (null != processResult.Error)
-            //     throw processResult.Error;
-            //
-            // return processResult.Data;
         }
 
         public async Task<bool> SetCardCollect(string subscriptionId, JObject input)
@@ -62,47 +48,8 @@ namespace Zoho.Services
             if (null != response && response.Property("Error") != null)
                 throw new Exception(response.Property("Error")?.Value.ToString());
 
-            // var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-            // var content = new StringContent(data, Encoding.UTF8, "application/json");
-            //
-            // var response = await _httpClient.PostAsync($"subscriptions/{subscriptionId}/card", content);
-            // var processResult = await ProcessResponse<Response>(response);
-
             return true;
         }
-
-
-        //         public async Task<JObject> CreateAsync(JObject input)
-//         {
-//             if (input == null)
-//                 throw new ArgumentNullException("input");
-//
-//             // var validationResult = input.Validate();
-//             // if (!validationResult && input.Errors.Any())
-//             //     throw new ArgumentNullException(input.Errors.First());
-//
-//             var client = await _factory.CreateAsync();
-//             
-// //Subscriptions
-//
-//             var response = await client.InvokePostAsync("Subscriptions", "customers", input);
-//             
-//             if (null != response && response.Property("Error") != null)
-//                 throw new Exception(response.Property("Error")?.Value.ToString());
-//             
-//             return response;
-//
-//             // var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
-//             // var content = new StringContent(data, Encoding.UTF8, "application/json");
-//             //
-//             // var response = await _httpClient.PostAsync("customers", content);
-//             // var processResult = await ProcessResponse<JObject>(response);
-//             //
-//             // if (null != processResult.Error)
-//             //     throw processResult.Error;
-//             //
-//             // return processResult.Data;
-//         }
 
         public async Task<JObject> RequestPaymentMethod(string customerId)
         {
@@ -117,16 +64,6 @@ namespace Zoho.Services
                 throw new Exception(response.Property("Error")?.Value.ToString());
             
             return response;
-
-            // //var data = JsonConvert.SerializeObject(customerId, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
-            //
-            // var response = await _httpClient.GetAsync($"customers/{customerId}/requestpaymentmethod");
-            // var processResult = await ProcessResponse<JObject>(response);
-            //
-            // if (null != processResult.Error)
-            //     throw processResult.Error;
-
-            //return processResult.Data;
         }
 
         public async Task<List<JObject>> GetCards(string customerId)
@@ -138,36 +75,34 @@ namespace Zoho.Services
             
             var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"customers/{customerId}/cards");
             
-            // if (null != response && response.Property("Error") != null)
-            //     throw new Exception(response.Property("Error")?.Value.ToString());
-            
             return response.ToList();
-
-            // //var data = JsonConvert.SerializeObject(customerId, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
-            //
-            // var response = await _httpClient.GetAsync($"customers/{customerId}/cards");
-            // var processResult = await ProcessResponse<Card[]>(response);
-            //
-            // if (null != processResult.Error)
-            //     throw processResult.Error;
-            //
-            // return processResult.Data.ToList();
         }
 
-        public async Task<List<JObject>> GetPlans()
+        public async Task<List<JToken>> GetPlans()
         {
             var client = await _factory.CreateAsync();
             
-            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"plans");
+            var response = await client.InvokeGetAsync<JObject>("Subscriptions", $"plans");
 
-            return response.ToList();
+            return response["plans"].ToList();
+        }
 
-            // var response = await _httpClient.GetAsync("plans");
-            // var processResult = await ProcessResponse<Plan[]>(response);
+        public async Task<List<JToken>> GetProducts()
+        {
+            var client = await _factory.CreateAsync();
+            
+            var response = await client.InvokeGetAsync<JObject>("Subscriptions", $"products");
 
-            // if (null != processResult.Error) throw processResult.Error;
-            //
-            // return processResult.Data.ToList();
+            return response["products"].ToList();
+        }
+        
+        public async Task<List<JToken>> GetAddons()
+        {
+            var client = await _factory.CreateAsync();
+            
+            var response = await client.InvokeGetAsync<JObject>("Subscriptions", $"addons");
+
+            return response["addons"].ToList();
         }
 
         public async Task<string> GetOption(string key)
