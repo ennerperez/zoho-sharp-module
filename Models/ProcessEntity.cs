@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Abstractions.Models
 {
     public class ProcessEntity<T>

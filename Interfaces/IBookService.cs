@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Interfaces
 {
     /// <summary>

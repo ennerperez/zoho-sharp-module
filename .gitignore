@@ -609,18 +609,7 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 
+# Http Privates
+*.private.env.json
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,aspnetcore,rider,macos,windows
-
-
-# Additionals
-
-*.min.*
-**/lib/**
-**/*.db
-**/[Ll]ogs
-
-# Specials
-
-**/wwwroot/images/logo
-.store
-electronize

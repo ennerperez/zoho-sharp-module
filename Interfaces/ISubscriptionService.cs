@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Interfaces
 {
     /// <summary>
@@ -14,6 +15,13 @@ namespace Zoho.Interfaces
         Task<JObject> CreateAsync(object input);
         Task<JObject> RequestPaymentMethod(string customerId);
         Task<List<JObject>> GetCards(string customerId);
+        Task<List<JObject>> GetProducts();
+        Task<List<T>> GetProducts<T>();
         Task<List<JObject>> GetPlans();
+        Task<List<T>> GetPlans<T>();
+        Task<List<JObject>> GetAddons();
+        Task<List<T>> GetAddons<T>();
+        
+        
     }
 }

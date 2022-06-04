@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Zoho.Services;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho
 {
     public class Factory
@@ -19,10 +20,10 @@ namespace Zoho
 
         public async Task<ZohoService> CreateAsync()
         {
-            var _client = _serviceProvider.GetRequiredService<ZohoService>();
-            _client.Configure(_options);
-            await _client.GetTokenAsync();
-            return _client;
+            var client = _serviceProvider.GetRequiredService<ZohoService>();
+            client.Configure(_options);
+            await client.GetTokenAsync();
+            return client;
         }
     }
 }

@@ -1,14 +1,15 @@
 using Zoho.Interfaces;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho
 {
-    public class Wrapper
+    public sealed class ZohoWrapper
     {
         private readonly IBookService _bookService;
         private readonly ICampaignService _campaignService;
         private readonly ISubscriptionService _subscriptionService;
 
-        public Wrapper(IBookService bookService, ICampaignService campaignService, ISubscriptionService subscriptionService)
+        public ZohoWrapper(IBookService bookService, ICampaignService campaignService, ISubscriptionService subscriptionService)
         {
             _bookService = bookService;
             _campaignService = campaignService;

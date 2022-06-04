@@ -11,20 +11,22 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
-// ReSharper disable RedundantAssignment
 
+// ReSharper disable RedundantAssignment
+// ReSharper disable once CheckNamespace
 namespace Zoho.Services
 {
     public class ZohoService
     {
         private readonly ILogger _logger;
 
-        protected readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;
 
         //private readonly Utf8JsonSerializer _jsonSerializer;
 
         private static DateTime _expiresIn;
         private static string _authToken;
+        private static int _tokenDuration = 3600;
 
         internal static DateTime ExpiresIn => _expiresIn;
         internal static string AuthToken => _authToken;
@@ -77,9 +79,18 @@ namespace Zoho.Services
         {
             if (!string.IsNullOrEmpty(_authToken) && DateTime.Now < _expiresIn) return;
 
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
+            var authFilename = Path.Combine(Path.GetTempPath(), $"{_options.ClientSecret}.token");
+            if (File.Exists(authFilename) && (DateTime.Now - File.GetLastWriteTime(authFilename)).TotalSeconds < _tokenDuration)
+            {
+                _authToken = File.ReadAllText(authFilename);
+                return;
+            }
+
+            var httpClient = new HttpClient();
+
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
 
             using (var content = new MultipartFormDataContent())
             {
@@ -88,7 +99,7 @@ namespace Zoho.Services
                 content.Add(new StringContent(_options.ClientSecret), "client_secret");
                 content.Add(new StringContent("refresh_token"), "grant_type");
 
-                var result = await _httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
+                var result = await httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
                 if (result.IsSuccessStatusCode)
                 {
                     var data = await result.Content.ReadAsStringAsync();
@@ -97,13 +108,13 @@ namespace Zoho.Services
                         var jobject = JObject.Parse(data);
                         _authToken = jobject.GetValue("access_token")?.ToString();
 #if DEBUG
-                        _logger.LogInformation($"AuthToken: {_authToken}");
+                        _logger.LogInformation("AuthToken: {AuthToken}", _authToken);
 #endif
-
                         if (!string.IsNullOrWhiteSpace(_authToken))
                         {
-                            var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? "3600");
+                            var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? $"{_tokenDuration}");
                             _expiresIn = DateTime.Now.AddMinutes(expiresIn);
+                            File.WriteAllText(authFilename, _authToken);
                         }
                     }
                 }
@@ -134,7 +145,7 @@ namespace Zoho.Services
                                 // ReSharper disable once RedundantAssignment
                                 var path = "responses";
 #if DEBUG
-                                path = Path.Combine("bin", "Debug", "net5.0", "responses");
+                                path = Path.Combine("bin", "Debug", "responses");
 #endif
                                 if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                                 var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
@@ -175,7 +186,7 @@ namespace Zoho.Services
                         {
                             var path = "responses";
 #if DEBUG
-                            path = Path.Combine("bin", "Debug", "net5.0", "responses");
+                            path = Path.Combine("bin", "Debug", "responses");
 #endif
                             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
                             var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
@@ -208,12 +219,12 @@ namespace Zoho.Services
             }
         }
 
-        public async Task<JObject> InvokePostAsync(string module, string url, object input)
+        public async Task<JObject> InvokePostAsync(string module, string url, object input, string subnode = "")
         {
-            return await InvokePostAsync<JObject>(module, url, input);
+            return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input)
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "")
         {
             if (input == null) throw new ArgumentNullException("input");
 
@@ -233,22 +244,22 @@ namespace Zoho.Services
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(url, content);
-            var processResult = await ProcessResponse<TOutput>(response);
+            var processResult = await ProcessResponse<TOutput>(response, subnode);
 
             if (null != processResult.Error) throw processResult.Error;
 
             return processResult.Data;
         }
 
-        public async Task<JObject> InvokeGetAsync(string module, string url)
+        public async Task<JObject> InvokeGetAsync(string module, string url, string subnode = "")
         {
-            return await InvokeGetAsync<JObject>(module, url);
+            return await InvokeGetAsync<JObject>(module, url, subnode);
         }
 
-        public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url)
+        public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url, string subnode = "")
         {
             await GetTokenAsync();
-            //SetHttpClient();
+            SetHttpClient();
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
@@ -258,7 +269,7 @@ namespace Zoho.Services
             url = $"{apiBaseUrl}{url}";
 
             var response = await _httpClient.GetAsync(url);
-            var processResult = await ProcessResponse<TOutput>(response);
+            var processResult = await ProcessResponse<TOutput>(response, subnode);
 
             if (null != processResult.Error) throw processResult.Error;
 

@@ -1,5 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Zoho.Abstractions.Models
 {
     public class Response
@@ -18,10 +21,16 @@ namespace Zoho.Abstractions.Models
 
         [JsonProperty("status")]
         public string Status { get; set; }
+        
+        [JsonProperty("page_context")]
+        public PageContext PageContext { get; set; }
+        
     }
 
     public class Response<T> : Response
     {
         public T Object { get; set; }
+        
     }
+    
 }
