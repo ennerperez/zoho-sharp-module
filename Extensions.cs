@@ -2,7 +2,7 @@
 using Zoho.Interfaces;
 using Zoho.Services;
 using Microsoft.Extensions.DependencyInjection;
-
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 // ReSharper disable once CheckNamespace
 namespace Zoho
 {
@@ -13,26 +13,26 @@ namespace Zoho
             services.AddHttpClient<ZohoService>("ZohoService");
             services.AddSingleton<Factory>().Configure(configureOptions);
 
-            if (lifetime == ServiceLifetime.Singleton)
+            switch (lifetime)
             {
-                services.AddSingleton<IBookService, BookService>().Configure(configureOptions);
-                services.AddSingleton<ICampaignService, CampaignService>().Configure(configureOptions);
-                services.AddSingleton<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
-                services.AddSingleton<ZohoWrapper>();
-            }
-            else if (lifetime == ServiceLifetime.Scoped)
-            {
-                services.AddScoped<IBookService, BookService>().Configure(configureOptions);
-                services.AddScoped<ICampaignService, CampaignService>().Configure(configureOptions);
-                services.AddScoped<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
-                services.AddScoped<ZohoWrapper>();
-            }
-            else if (lifetime == ServiceLifetime.Transient)
-            {
-                services.AddTransient<IBookService, BookService>().Configure(configureOptions);
-                services.AddTransient<ICampaignService, CampaignService>().Configure(configureOptions);
-                services.AddTransient<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
-                services.AddTransient<ZohoWrapper>();
+                case ServiceLifetime.Singleton:
+                    services.AddSingleton<IBookService, BookService>().Configure(configureOptions);
+                    services.AddSingleton<ICampaignService, CampaignService>().Configure(configureOptions);
+                    services.AddSingleton<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
+                    services.AddSingleton<ZohoWrapper>();
+                    break;
+                case ServiceLifetime.Scoped:
+                    services.AddScoped<IBookService, BookService>().Configure(configureOptions);
+                    services.AddScoped<ICampaignService, CampaignService>().Configure(configureOptions);
+                    services.AddScoped<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
+                    services.AddScoped<ZohoWrapper>();
+                    break;
+                case ServiceLifetime.Transient:
+                    services.AddTransient<IBookService, BookService>().Configure(configureOptions);
+                    services.AddTransient<ICampaignService, CampaignService>().Configure(configureOptions);
+                    services.AddTransient<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
+                    services.AddTransient<ZohoWrapper>();
+                    break;
             }
 
 

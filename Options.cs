@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-
+// ReSharper disable CollectionNeverUpdated.Global
 // ReSharper disable once CheckNamespace
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Zoho
 {
     public class Options

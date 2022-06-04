@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 
-namespace Zoho.Abstractions.Models
+// ReSharper disable once CheckNamespace
+namespace Zoho.Models
 {
     public class PageContext
     {
