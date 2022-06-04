@@ -22,6 +22,9 @@ namespace Zoho.Abstractions.Models
         [JsonProperty("status")]
         public string Status { get; set; }
         
+        [JsonProperty("page_context")]
+        public PageContext PageContext { get; set; }
+        
     }
 
     public class Response<T> : Response
