@@ -13,7 +13,6 @@ using Newtonsoft.Json.Linq;
 using Zoho.Abstractions.Models;
 
 // ReSharper disable RedundantAssignment
-
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
 {
@@ -27,6 +26,7 @@ namespace Zoho.Services
 
         private static DateTime _expiresIn;
         private static string _authToken;
+        private static int _tokenDuration = 3600;
 
         internal static DateTime ExpiresIn => _expiresIn;
         internal static string AuthToken => _authToken;
@@ -79,8 +79,8 @@ namespace Zoho.Services
         {
             if (!string.IsNullOrEmpty(_authToken) && DateTime.Now < _expiresIn) return;
 
-            var authFilename = $"{_options.ClientSecret}.token";
-            if (File.Exists(authFilename) && (DateTime.Now - File.GetLastWriteTime(authFilename)).TotalHours < 1)
+            var authFilename = Path.Combine(Path.GetTempPath(), $"{_options.ClientSecret}.token");
+            if (File.Exists(authFilename) && (DateTime.Now - File.GetLastWriteTime(authFilename)).TotalSeconds < _tokenDuration)
             {
                 _authToken = File.ReadAllText(authFilename);
                 return;
@@ -110,10 +110,9 @@ namespace Zoho.Services
 #if DEBUG
                         _logger.LogInformation("AuthToken: {AuthToken}", _authToken);
 #endif
-
                         if (!string.IsNullOrWhiteSpace(_authToken))
                         {
-                            var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? "3600");
+                            var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? $"{_tokenDuration}");
                             _expiresIn = DateTime.Now.AddMinutes(expiresIn);
                             File.WriteAllText(authFilename, _authToken);
                         }
@@ -220,12 +219,12 @@ namespace Zoho.Services
             }
         }
 
-        public async Task<JObject> InvokePostAsync(string module, string url, object input)
+        public async Task<JObject> InvokePostAsync(string module, string url, object input, string subnode = "")
         {
-            return await InvokePostAsync<JObject>(module, url, input);
+            return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input)
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "")
         {
             if (input == null) throw new ArgumentNullException("input");
 
@@ -245,19 +244,19 @@ namespace Zoho.Services
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync(url, content);
-            var processResult = await ProcessResponse<TOutput>(response);
+            var processResult = await ProcessResponse<TOutput>(response, subnode);
 
             if (null != processResult.Error) throw processResult.Error;
 
             return processResult.Data;
         }
 
-        public async Task<JObject> InvokeGetAsync(string module, string url)
+        public async Task<JObject> InvokeGetAsync(string module, string url, string subnode = "")
         {
-            return await InvokeGetAsync<JObject>(module, url);
+            return await InvokeGetAsync<JObject>(module, url, subnode);
         }
 
-        public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url)
+        public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url, string subnode = "")
         {
             await GetTokenAsync();
             SetHttpClient();
@@ -270,7 +269,7 @@ namespace Zoho.Services
             url = $"{apiBaseUrl}{url}";
 
             var response = await _httpClient.GetAsync(url);
-            var processResult = await ProcessResponse<TOutput>(response);
+            var processResult = await ProcessResponse<TOutput>(response, subnode);
 
             if (null != processResult.Error) throw processResult.Error;
 

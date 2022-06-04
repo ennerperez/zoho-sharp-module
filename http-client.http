@@ -1,0 +1,155 @@
+### Step 1: Generating Grant Token (Browser Only)
+GET {{host_accounts}}/oauth/v2/auth?scope={{scopes}}&client_id={{client_id}}&state={{state}}&response_type=code&redirect_uri={{redirect_uri}}&access_type=offline
+
+### Step 2: Generate Access And Refresh Token
+POST {{host_accounts}}/oauth/v2/token?code={{code}}&client_id={{client_id}}&client_secret={{client_secret}}&redirect_uri={{redirect_uri}}&grant_type=authorization_code
+
+### Step 2.1: Generate Access Token From Refresh Token
+POST {{host_accounts}}/oauth/v2/token?refresh_token={{refresh_token}}&client_id={{client_id}}&client_secret={{client_secret}}&redirect_uri={{redirect_uri}}&grant_type=refresh_token
+
+### Step 3: Calling An API (List of all products)
+GET {{host_subscriptions}}/api/v1/products
+X-com-zoho-subscriptions-organizationid: {{organizationid}}
+Authorization: Zoho-oauthtoken {{access_token}}
+
+### Step 3: Calling An API (List of all plans)
+GET {{host_subscriptions}}/api/v1/plans
+X-com-zoho-subscriptions-organizationid: {{organizationid}}
+Authorization: Zoho-oauthtoken {{access_token}}
+
+### Step 5: Calling An API (Add new subscription)
+POST {{host_subscriptions}}/api/v1/subscriptions
+X-com-zoho-subscriptions-organizationid: {{organizationid}}
+Authorization: Zoho-oauthtoken {{access_token}}
+
+{
+    "add_to_unbilled_charges": true,
+    "customer": {
+        "display_name": "Bowman Furniture",
+        "salutation": "Mr.",
+        "first_name": "Benjamin",
+        "last_name": "George",
+        "email": "benjamin.george@bowmanfurniture.com",
+        "company_name": "Bowman Furniture",
+        "billing_address": {
+            "attention": "Benjamin George",
+            "street": "Harrington Bay Street",
+            "city": "Salt Lake City",
+            "state": "CA",
+            "country": "U.S.A",
+            "zip": 92612,
+            "fax": 4527389
+        },
+        "shipping_address": {
+            "attention": "Benjamin George",
+            "street": "Harrington Bay Street",
+            "city": "Salt Lake City",
+            "state": "CA",
+            "zip": 92612,
+            "country": "U.S.A",
+            "fax": 4527389
+        },
+        "payment_terms": 1,
+        "payment_terms_label": "Due On Receipt",
+        "custom_fields": [
+            {
+                "label": "string",
+                "value": "string"
+            }
+        ],
+        "place_of_contact": "TN",
+        "gst_no": "33AAAAA0000A1Z5",
+        "gst_treatment": "business_gst",
+        "vat_treatment": "overseas",
+        "vat_reg_no": 51423456782,
+        "country_code": "DE",
+        "is_taxable": true,
+        "tax_id": "903000002345",
+        "tax_authority_id": "903000006345",
+        "tax_authority_name": "ATO",
+        "tax_exemption_id": "903000006345",
+        "tax_exemption_code": "GST FREE"
+    },
+    "customer_id": null,
+    "payment_terms": 1,
+    "payment_terms_label": "Due On Receipt",
+    "custom_fields": [
+        {
+            "label": "string",
+            "value": "string"
+        }
+    ],
+    "contactpersons": [
+        {
+            "contactperson_id": "903000000000099"
+        }
+    ],
+    "card_id": null,
+    "starts_at": "2016-06-05",
+    "exchange_rate": 2,
+    "place_of_supply": "TN",
+    "plan": {
+        "plan_code": "basic-monthly",
+        "plan_description": "Monthly Basic plan",
+        "price": 50,
+        "setup_fee": 20,
+        "setup_fee_tax_id": "9030000123123",
+        "tags": [
+            {
+                "tag_id": 0,
+                "tag_option_id": 0
+            }
+        ],
+        "item_custom_fields": [
+            {
+                "label": "string",
+                "value": "string"
+            }
+        ],
+        "quantity": 1,
+        "tax_id": null,
+        "tax_exemption_id": "903000006345",
+        "tax_exemption_code": "GST FREE",
+        "setup_fee_tax_exemption_id": "9030000123098",
+        "setup_fee_tax_exemption_code": "GST FREE",
+        "exclude_trial": false,
+        "exclude_setup_fee": false,
+        "billing_cycles": -1,
+        "trial_days": 0
+    },
+    "addons": [
+        {
+            "addon_code": "Email-basic",
+            "addon_description": "Monthly addon.",
+            "price": 50,
+            "quantity": null,
+            "tags": [
+                {
+                    "tag_id": 0,
+                    "tag_option_id": 0
+                }
+            ],
+            "item_custom_fields": [
+                {
+                    "label": "string",
+                    "value": "string"
+                }
+            ],
+            "tax_id": null,
+            "tax_exemption_id": "903000006345",
+            "tax_exemption_code": "GST FREE"
+        }
+    ],
+    "coupon_code": "Flat10",
+    "auto_collect": true,
+    "reference_id": "bowmanfurniture",
+    "salesperson_name": "Franklin",
+    "payment_gateways": [
+        {
+            "payment_gateway": null
+        }
+    ],
+    "create_backdated_invoice": true,
+    "can_charge_setup_fee_immediately": false,
+    "template_id": 903000000063009
+}

@@ -78,31 +78,31 @@ namespace Zoho.Services
             return response.ToList();
         }
 
-        public async Task<List<JToken>> GetPlans()
+        public async Task<List<JObject>> GetPlans()
         {
             var client = await _factory.CreateAsync();
             
-            var response = await client.InvokeGetAsync<JObject>("Subscriptions", $"plans");
+            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", "plans", "plans");
 
-            return response["plans"].ToList();
+            return response.ToList();
         }
 
-        public async Task<List<JToken>> GetProducts()
+        public async Task<List<JObject>> GetProducts()
         {
             var client = await _factory.CreateAsync();
             
-            var response = await client.InvokeGetAsync<JObject>("Subscriptions", $"products");
+            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", "products", "products");
 
-            return response["products"].ToList();
+            return response.ToList();
         }
         
-        public async Task<List<JToken>> GetAddons()
+        public async Task<List<JObject>> GetAddons()
         {
             var client = await _factory.CreateAsync();
             
-            var response = await client.InvokeGetAsync<JObject>("Subscriptions", $"addons");
+            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", "addons", "addons");
 
-            return response["addons"].ToList();
+            return response.ToList();
         }
 
         public async Task<string> GetOption(string key)
