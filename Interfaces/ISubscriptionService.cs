@@ -15,8 +15,13 @@ namespace Zoho.Interfaces
         Task<JObject> CreateAsync(object input);
         Task<JObject> RequestPaymentMethod(string customerId);
         Task<List<JObject>> GetCards(string customerId);
-        Task<List<JObject>> GetPlans();
         Task<List<JObject>> GetProducts();
+        Task<List<T>> GetProducts<T>();
+        Task<List<JObject>> GetPlans();
+        Task<List<T>> GetPlans<T>();
         Task<List<JObject>> GetAddons();
+        Task<List<T>> GetAddons<T>();
+        
+        
     }
 }

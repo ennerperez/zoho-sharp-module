@@ -11,14 +11,13 @@ namespace Zoho.Services
 {
     public class SubscriptionService : ISubscriptionService
     {
-        
         private readonly Factory _factory;
-        
+
         public SubscriptionService(Factory factory)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
-        
+
         public async Task<JObject> CreateAsync(object input)
         {
             var client = await _factory.CreateAsync();
@@ -57,12 +56,12 @@ namespace Zoho.Services
                 throw new ArgumentNullException("customerId");
 
             var client = await _factory.CreateAsync();
-            
+
             var response = await client.InvokeGetAsync("Subscriptions", $"customers/{customerId}/requestpaymentmethod");
-            
+
             if (null != response && response.Property("Error") != null)
                 throw new Exception(response.Property("Error")?.Value.ToString());
-            
+
             return response;
         }
 
@@ -72,36 +71,45 @@ namespace Zoho.Services
                 throw new ArgumentNullException("customerId");
 
             var client = await _factory.CreateAsync();
-            
-            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"customers/{customerId}/cards");
-            
-            return response.ToList();
-        }
 
-        public async Task<List<JObject>> GetPlans()
-        {
-            var client = await _factory.CreateAsync();
-            
-            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", "plans", "plans");
+            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"customers/{customerId}/cards");
 
             return response.ToList();
         }
 
         public async Task<List<JObject>> GetProducts()
         {
-            var client = await _factory.CreateAsync();
-            
-            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", "products", "products");
-
-            return response.ToList();
+            return await GetProducts<JObject>();
         }
-        
-        public async Task<List<JObject>> GetAddons()
+
+        public async Task<List<T>> GetProducts<T>()
         {
             var client = await _factory.CreateAsync();
-            
-            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", "addons", "addons");
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "products", "products");
+            return response.ToList();
+        }
 
+        public async Task<List<JObject>> GetPlans()
+        {
+            return await GetPlans<JObject>();
+        }
+
+        public async Task<List<T>> GetPlans<T>()
+        {
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "plans", "plans");
+            return response.ToList();
+        }
+
+        public async Task<List<JObject>> GetAddons()
+        {
+            return await GetAddons<JObject>();
+        }
+
+        public async Task<List<T>> GetAddons<T>()
+        {
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
             return response.ToList();
         }
 
