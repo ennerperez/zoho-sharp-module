@@ -23,6 +23,7 @@ namespace Zoho.Records
         string store_description,
         string store_markup_description,
         string type,
+        decimal price,
         string interval_unit,
         DateTime created_time,
         DateTime? updated_time,
