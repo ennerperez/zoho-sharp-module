@@ -24,6 +24,12 @@ namespace Zoho.Services
             return await client.InvokePostAsync("Subscriptions", "subscriptions", input);
         }
 
+        public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
+        {
+            var client = await _factory.CreateAsync();
+            return await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/postpone", input);
+        }
+        
         public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
         {
             if (input == null)
