@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Zoho.Abstractions.Models;
+using Zoho.Models;
 
 // ReSharper disable RedundantAssignment
 // ReSharper disable once CheckNamespace

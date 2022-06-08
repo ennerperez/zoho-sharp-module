@@ -1,7 +1,7 @@
 ﻿using System;
-
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable once CheckNamespace
-namespace Zoho.Abstractions.Models
+namespace Zoho.Models
 {
     public class ProcessEntity<T>
     {

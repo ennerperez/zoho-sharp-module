@@ -1,6 +1,8 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
-
+// ReSharper disable NotAccessedPositionalProperty.Global
+// ReSharper disable once CheckNamespace
+// ReSharper disable ClassNeverInstantiated.Global
 namespace Zoho.Records
 {
     public record Addon(
@@ -21,6 +23,7 @@ namespace Zoho.Records
         string store_description,
         string store_markup_description,
         string type,
+        decimal price,
         string interval_unit,
         DateTime created_time,
         DateTime? updated_time,

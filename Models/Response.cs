@@ -1,9 +1,8 @@
-﻿using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-
+﻿using Newtonsoft.Json;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable once CheckNamespace
-namespace Zoho.Abstractions.Models
+// ReSharper disable ClassNeverInstantiated.Global
+namespace Zoho.Models
 {
     public class Response
     {
