@@ -17,6 +17,11 @@ GET {{host_subscriptions}}/api/v1/plans
 X-com-zoho-subscriptions-organizationid: {{organizationid}}
 Authorization: Zoho-oauthtoken {{access_token}}
 
+### Step 3: Calling An API (Get a Customer)
+GET {{host_subscriptions}}/api/v1/customers/3273263000000119015
+X-com-zoho-subscriptions-organizationid: {{organizationid}}
+Authorization: Zoho-oauthtoken {{access_token}}
+
 
 
 ### Step 5: Calling An API (Add new subscription)
