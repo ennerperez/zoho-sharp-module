@@ -118,6 +118,18 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
             return response.ToList();
         }
+        
+        public async Task<List<JObject>> GetSubscriptions()
+        {
+            return await GetSubscriptions<JObject>();
+        }
+
+        public async Task<List<T>> GetSubscriptions<T>()
+        {
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "subscriptions", "subscriptions");
+            return response.ToList();
+        }
 
         public async Task<string> GetOption(string key)
         {
