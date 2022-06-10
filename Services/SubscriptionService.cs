@@ -24,6 +24,12 @@ namespace Zoho.Services
             return await client.InvokePostAsync("Subscriptions", "subscriptions", input);
         }
 
+        public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
+        {
+            var client = await _factory.CreateAsync();
+            return await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/postpone", input);
+        }
+        
         public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
         {
             if (input == null)
@@ -110,6 +116,18 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
+            return response.ToList();
+        }
+        
+        public async Task<List<JObject>> GetSubscriptions()
+        {
+            return await GetSubscriptions<JObject>();
+        }
+
+        public async Task<List<T>> GetSubscriptions<T>()
+        {
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "subscriptions", "subscriptions");
             return response.ToList();
         }
 
