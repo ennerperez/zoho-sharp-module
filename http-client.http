@@ -160,3 +160,31 @@ Authorization: Zoho-oauthtoken {{access_token}}
     "can_charge_setup_fee_immediately": false,
     "template_id": 903000000063009
 }
+
+### Step 5: Calling An API (Get Hostedpages)
+### [1] https://www.zoho.com/subscriptions/api/v1/hosted-pages/#create-a-subscription
+### [2] https://www.zoho.com/subscriptions/api/v1/customers/#create-a-customer (Ref: Customer Model)
+POST https://subscriptions.zoho.com/api/v1/hostedpages/newsubscription
+X-com-zoho-subscriptions-organizationid: {{organizationid}}
+Authorization: Zoho-oauthtoken {{access_token}}
+Content-Type: application/json;charset=UTF-8
+
+{
+  "plan": {
+    "plan_code": "3DB"
+  },
+  "customer": {
+    "display_name": "Enner Pérez",
+    "email": "ennerperez@gmail.com",
+    "custom_fields": [
+      {
+        "label": "Allergies",
+        "value": "Soy"
+      },
+      {
+        "label": "Allergies",
+        "value": "Milk"
+      }
+    ]
+  }
+}
