@@ -27,7 +27,7 @@ namespace Zoho.Services
         public async Task<JObject> CreateSubscriptionAsync(object input)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Subscriptions", "hostedpages/3273263000000089206", input);
+            return await client.InvokePostAsync("Subscriptions", "hostedpages/newsubscription", input);
         }
 
         public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
