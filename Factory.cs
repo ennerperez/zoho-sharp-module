@@ -22,7 +22,7 @@ namespace Zoho
         {
             var client = _serviceProvider.GetRequiredService<ZohoService>();
             client.Configure(_options);
-            await client.GetTokenAsync();
+            if (string.IsNullOrEmpty(ZohoService.AuthToken)) await client.GetTokenAsync();
             return client;
         }
     }

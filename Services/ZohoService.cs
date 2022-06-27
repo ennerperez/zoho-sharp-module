@@ -1,7 +1,10 @@
-﻿using System;
+﻿//#define EXPIRED_TOKEN
+
+using System;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -24,12 +27,8 @@ namespace Zoho.Services
 
         //private readonly Utf8JsonSerializer _jsonSerializer;
 
-        private static DateTime _expiresIn;
         private static string _authToken;
-        private static int _tokenDuration = 3600;
-
-        internal static DateTime ExpiresIn => _expiresIn;
-        internal static string AuthToken => _authToken;
+        protected internal static string AuthToken => _authToken;
 
         internal HttpClient HttpClient => _httpClient;
 
@@ -71,58 +70,69 @@ namespace Zoho.Services
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ? "application/pdf" : "application/json"));
 
+            _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("authorization", string.Format(CultureInfo.InvariantCulture, "Zoho-oauthtoken {0}", AuthToken));
             _httpClient.DefaultRequestHeaders.Add("x-com-zoho-subscriptions-organizationid", organizationId);
         }
 
-        public async Task GetTokenAsync()
+        public async Task GetTokenAsync(bool force = false)
         {
-            if (!string.IsNullOrEmpty(_authToken) && DateTime.Now < _expiresIn) return;
-
+            
             var authFilename = Path.Combine(Path.GetTempPath(), $"{_options.ClientSecret}.token");
-            if (File.Exists(authFilename) && (DateTime.Now - File.GetLastWriteTime(authFilename)).TotalSeconds < _tokenDuration)
+            if (File.Exists(authFilename)) _authToken = File.ReadAllText(authFilename);
+            
+            if (force) _authToken = string.Empty;
+
+#if EXPIRED_TOKEN
+            if (!force)
             {
-                _authToken = File.ReadAllText(authFilename);
-                return;
+                _authToken = "1000.15c9c29cbac08d7743858b207df507f4.6ef626fe7785f2a46dbc7d297f1b63ec";
+                File.WriteAllText(authFilename, _authToken);
             }
-
-            var httpClient = new HttpClient();
-
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
-
-            using (var content = new MultipartFormDataContent())
-            {
-                content.Add(new StringContent(_options.RefreshToken), "refresh_token");
-                content.Add(new StringContent(_options.ClientId), "client_id");
-                content.Add(new StringContent(_options.ClientSecret), "client_secret");
-                content.Add(new StringContent("refresh_token"), "grant_type");
-
-                var result = await httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
-                if (result.IsSuccessStatusCode)
-                {
-                    var data = await result.Content.ReadAsStringAsync();
-                    if (!string.IsNullOrWhiteSpace(data))
-                    {
-                        var jobject = JObject.Parse(data);
-                        _authToken = jobject.GetValue("access_token")?.ToString();
-#if DEBUG
-                        _logger.LogInformation("AuthToken: {AuthToken}", _authToken);
 #endif
-                        if (!string.IsNullOrWhiteSpace(_authToken))
+
+            if (!string.IsNullOrWhiteSpace(_authToken)) return;
+
+            var retryCount = 0;
+            bool IsSuccessStatusCode = false;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                var httpClient = new HttpClient();
+
+                httpClient.DefaultRequestHeaders.Accept.Clear();
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
+
+                using (var content = new MultipartFormDataContent())
+                {
+                    content.Add(new StringContent(_options.RefreshToken), "refresh_token");
+                    content.Add(new StringContent(_options.ClientId), "client_id");
+                    content.Add(new StringContent(_options.ClientSecret), "client_secret");
+                    content.Add(new StringContent("refresh_token"), "grant_type");
+
+                    var result = await httpClient.PostAsync(_options.Modules["Accounts"].Url, content);
+                    IsSuccessStatusCode = result.IsSuccessStatusCode;
+
+                    if (IsSuccessStatusCode)
+                    {
+                        var data = await result.Content.ReadAsStringAsync();
+                        if (!string.IsNullOrWhiteSpace(data))
                         {
-                            var expiresIn = int.Parse(jobject.GetValue("expires_in")?.ToString() ?? $"{_tokenDuration}");
-                            _expiresIn = DateTime.Now.AddMinutes(expiresIn);
+                            var jobject = JObject.Parse(data);
+                            _authToken = jobject.GetValue("access_token")?.ToString();
                             File.WriteAllText(authFilename, _authToken);
+#if DEBUG
+                            _logger.LogInformation("AuthToken: {AuthToken}", _authToken);
+#endif
                         }
                     }
                 }
-                else
-                {
-                    throw new UnauthorizedAccessException("Unable to get token.");
-                }
+
+                retryCount++;
             }
+
+            if (!IsSuccessStatusCode)
+                throw new UnauthorizedAccessException("Unable to get token.");
         }
 
         public async Task<ProcessEntity<T>> ProcessResponse<T>(HttpResponseMessage response, string subnode = "")
@@ -228,27 +238,34 @@ namespace Zoho.Services
         {
             if (input == null) throw new ArgumentNullException("input");
 
-            await GetTokenAsync();
-            SetHttpClient();
-
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
             if (!apiBaseUrl.EndsWith("/"))
                 apiBaseUrl = apiBaseUrl + "/";
 
-
             url = $"{apiBaseUrl}{url}";
-            //_httpClient.BaseAddress = new Uri(apiBaseUrl);
 
             var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync(url, content);
-            var processResult = await ProcessResponse<TOutput>(response, subnode);
+            var retryCount = 0;
+            bool IsSuccessStatusCode = false;
+            ProcessEntity<TOutput> processResult = null;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.PostAsync(url, content);
+                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    await GetTokenAsync(true);
+                else
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
+                retryCount++;
+            }
 
-            if (null != processResult.Error) throw processResult.Error;
-
-            return processResult.Data;
+            if (processResult == null) throw new InvalidOperationException("API call did not completed successfully");
+            else if (processResult.Error != null) throw processResult.Error;
+            else return processResult.Data;
         }
 
         public async Task<JObject> InvokeGetAsync(string module, string url, string subnode = "")
@@ -258,8 +275,6 @@ namespace Zoho.Services
 
         public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url, string subnode = "")
         {
-            await GetTokenAsync();
-            SetHttpClient();
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
@@ -268,12 +283,24 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var response = await _httpClient.GetAsync(url);
-            var processResult = await ProcessResponse<TOutput>(response, subnode);
+            var retryCount = 0;
+            bool IsSuccessStatusCode = false;
+            ProcessEntity<TOutput> processResult = null;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.GetAsync(url);
+                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    await GetTokenAsync(true);
+                else
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
+                retryCount++;
+            }
 
-            if (null != processResult.Error) throw processResult.Error;
-
-            return processResult.Data;
+            if (processResult == null) throw new InvalidOperationException("API call did not completed successfully");
+            else if (processResult.Error != null) throw processResult.Error;
+            else return processResult.Data;
         }
     }
 }
