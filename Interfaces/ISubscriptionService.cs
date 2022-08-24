@@ -26,6 +26,11 @@ namespace Zoho.Interfaces
         Task<List<JObject>> GetCoupons();
         Task<List<T>> GetCoupons<T>();
         
+        Task<List<JObject>> GetCustomers();
+        Task<List<T>> GetCustomers<T>();
+        
+        Task<JObject> CreateCustomerAsync(object input);
+        
         Task<List<JObject>> GetSubscriptions();
         Task<List<T>> GetSubscriptions<T>();
     }

@@ -28,6 +28,13 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Subscriptions", "hostedpages/newsubscription", input);
         }
+        
+        public async Task<JObject> CreateCustomerAsync(object input)
+        {
+            var client = await _factory.CreateAsync();
+            //https://subscriptions.zoho.com/api/v1/customers
+            return await client.InvokePostAsync("Subscriptions", "customers", input);
+        }
 
         public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
         {
@@ -97,6 +104,19 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             var response = await client.InvokeGetAsync<T[]>("Subscriptions", "products", "products");
+            return response.ToList();
+        }
+        
+        public async Task<List<JObject>> GetCustomers()
+        {
+            return await GetCustomers<JObject>();
+        }
+
+        public async Task<List<T>> GetCustomers<T>()
+        {
+            var client = await _factory.CreateAsync();
+            //https://subscriptions.zoho.com/api/v1/customers
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "customers", "customers");
             return response.ToList();
         }
 
