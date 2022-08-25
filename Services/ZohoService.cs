@@ -267,6 +267,47 @@ namespace Zoho.Services
             else if (processResult.Error != null) throw processResult.Error;
             else return processResult.Data;
         }
+        
+        
+        public async Task<JObject> InvokePutAsync(string module, string url, object input, string subnode = "")
+        {
+            return await InvokePutAsync<JObject>(module, url, input, subnode);
+        }
+
+        public async Task<TOutput> InvokePutAsync<TOutput>(string module, string url, object input, string subnode = "")
+        {
+            if (input == null) throw new ArgumentNullException("input");
+
+            // Sanity patch for base URL to end with /
+            var apiBaseUrl = _options.Modules[module].Url;
+            if (!apiBaseUrl.EndsWith("/"))
+                apiBaseUrl = apiBaseUrl + "/";
+
+            url = $"{apiBaseUrl}{url}";
+
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
+
+            var retryCount = 0;
+            bool IsSuccessStatusCode = false;
+            ProcessEntity<TOutput> processResult = null;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.PutAsync(url, content);
+                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    await GetTokenAsync(true);
+                else
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
+                retryCount++;
+            }
+
+            if (processResult == null) throw new InvalidOperationException("API call did not completed successfully");
+            else if (processResult.Error != null) throw processResult.Error;
+            else return processResult.Data;
+        }
+        
 
         public async Task<JObject> InvokeGetAsync(string module, string url, string subnode = "")
         {
