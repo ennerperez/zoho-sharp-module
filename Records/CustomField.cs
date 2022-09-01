@@ -4,6 +4,6 @@
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Zoho.Records
 {
-    public record CustomFields(string label, string value);
+    public record CustomField(string label, string value);
 }
 #endif

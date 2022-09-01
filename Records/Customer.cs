@@ -15,7 +15,10 @@ namespace Zoho.Records
         string phone,
         string mobile,
         string website,
-        CustomFields[] custom_fields
+        string status,
+        DateTime created_time,
+        DateTime updated_time,
+        CustomField[] custom_fields
         
         //     {
         //     "display_name": "Bowman Furniture",

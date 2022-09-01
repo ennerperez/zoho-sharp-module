@@ -40,7 +40,7 @@ namespace Zoho.Records
         DateTime? updated_time,
         string updated_time_formatted,
         Addon[] addons,
-        CustomFields[] custom_fields
+        CustomField[] custom_fields
     );
 }
 #endif
