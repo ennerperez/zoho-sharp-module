@@ -1,5 +1,6 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
+
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
@@ -19,7 +20,7 @@ namespace Zoho.Records
         DateTime created_time,
         DateTime updated_time,
         CustomField[] custom_fields
-        
+
         //     {
         //     "display_name": "Bowman Furniture",
         //     "salutation": "Mr.",
@@ -89,7 +90,6 @@ namespace Zoho.Records
         //     }
         //     ]
         // }
-        
-        );
+    );
 }
 #endif

@@ -1,5 +1,6 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
+
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
