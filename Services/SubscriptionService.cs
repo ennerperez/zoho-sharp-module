@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
-using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -23,11 +22,25 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Subscriptions", "subscriptions", input);
         }
-        
+
         public async Task<JObject> CreateSubscriptionAsync(object input)
         {
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Subscriptions", "hostedpages/newsubscription", input);
+        }
+
+        public async Task<JObject> CreateCustomerAsync(object input)
+        {
+            var client = await _factory.CreateAsync();
+            //https://subscriptions.zoho.com/api/v1/customers
+            return await client.InvokePostAsync("Subscriptions", "customers", input);
+        }
+
+        public async Task<JObject> UpdateCustomerAsync(object input, string customerId)
+        {
+            var client = await _factory.CreateAsync();
+            //https://subscriptions.zoho.com/api/v1/customers
+            return await client.InvokePutAsync("Subscriptions", $"customers/{customerId}", input);
         }
 
         public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
@@ -35,7 +48,7 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/postpone", input);
         }
-        
+
         public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
         {
             if (input == null)
@@ -101,6 +114,19 @@ namespace Zoho.Services
             return response.ToList();
         }
 
+        public async Task<List<JObject>> GetCustomers()
+        {
+            return await GetCustomers<JObject>();
+        }
+
+        public async Task<List<T>> GetCustomers<T>()
+        {
+            var client = await _factory.CreateAsync();
+            //https://subscriptions.zoho.com/api/v1/customers
+            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "customers", "customers");
+            return response.ToList();
+        }
+
         public async Task<List<JObject>> GetPlans()
         {
             return await GetPlans<JObject>();
@@ -124,7 +150,7 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
             return response.ToList();
         }
-        
+
         public async Task<List<JObject>> GetCoupons()
         {
             return await GetCoupons<JObject>();
@@ -136,7 +162,7 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
             return response.ToList();
         }
-        
+
         public async Task<List<JObject>> GetSubscriptions()
         {
             return await GetSubscriptions<JObject>();

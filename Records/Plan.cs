@@ -1,5 +1,6 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
+
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
@@ -40,7 +41,7 @@ namespace Zoho.Records
         DateTime? updated_time,
         string updated_time_formatted,
         Addon[] addons,
-        CustomFields[] custom_fields
+        CustomField[] custom_fields
     );
 }
 #endif

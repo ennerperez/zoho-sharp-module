@@ -77,10 +77,9 @@ namespace Zoho.Services
 
         public async Task GetTokenAsync(bool force = false)
         {
-            
             var authFilename = Path.Combine(Path.GetTempPath(), $"{_options.ClientSecret}.token");
             if (File.Exists(authFilename)) _authToken = File.ReadAllText(authFilename);
-            
+
             if (force) _authToken = string.Empty;
 
 #if EXPIRED_TOKEN
@@ -174,15 +173,15 @@ namespace Zoho.Services
                 }
                 catch (Exception exception)
                 {
-                    return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
+                    return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
                 }
 
-                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred") };
+                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred")};
 
-                return new ProcessEntity<T> { Error = new InvalidOperationException(errorResponse.Message) };
+                return new ProcessEntity<T> {Error = new InvalidOperationException(errorResponse.Message)};
             }
 
-            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> { Data = (T)(object)response.IsSuccessStatusCode };
+            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> {Data = (T)(object)response.IsSuccessStatusCode};
 
             try
             {
@@ -217,15 +216,15 @@ namespace Zoho.Services
                     if (innerNodeContent != null && innerNodeContent.ContainsKey(subnode) && innerNodeContent[subnode] != null)
                     {
                         var data = innerNodeContent[subnode].ToObject<T>();
-                        return new ProcessEntity<T> { Data = data };
+                        return new ProcessEntity<T> {Data = data};
                     }
                 }
 
-                return new ProcessEntity<T> { Data = JsonConvert.DeserializeObject<T>(rawResponseContent) };
+                return new ProcessEntity<T> {Data = JsonConvert.DeserializeObject<T>(rawResponseContent)};
             }
             catch (Exception exception)
             {
-                return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
+                return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
             }
         }
 
@@ -238,6 +237,9 @@ namespace Zoho.Services
         {
             if (input == null) throw new ArgumentNullException("input");
 
+            if (!_options.Modules[module].Enabled)
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
             if (!apiBaseUrl.EndsWith("/"))
@@ -245,7 +247,7 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
             var retryCount = 0;
@@ -268,6 +270,50 @@ namespace Zoho.Services
             else return processResult.Data;
         }
 
+
+        public async Task<JObject> InvokePutAsync(string module, string url, object input, string subnode = "")
+        {
+            return await InvokePutAsync<JObject>(module, url, input, subnode);
+        }
+
+        public async Task<TOutput> InvokePutAsync<TOutput>(string module, string url, object input, string subnode = "")
+        {
+            if (input == null) throw new ArgumentNullException("input");
+            
+            if (!_options.Modules[module].Enabled)
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+
+            // Sanity patch for base URL to end with /
+            var apiBaseUrl = _options.Modules[module].Url;
+            if (!apiBaseUrl.EndsWith("/"))
+                apiBaseUrl = apiBaseUrl + "/";
+
+            url = $"{apiBaseUrl}{url}";
+
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+            var content = new StringContent(data, Encoding.UTF8, "application/json");
+
+            var retryCount = 0;
+            bool IsSuccessStatusCode = false;
+            ProcessEntity<TOutput> processResult = null;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.PutAsync(url, content);
+                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    await GetTokenAsync(true);
+                else
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
+                retryCount++;
+            }
+
+            if (processResult == null) throw new InvalidOperationException("API call did not completed successfully");
+            else if (processResult.Error != null) throw processResult.Error;
+            else return processResult.Data;
+        }
+
+
         public async Task<JObject> InvokeGetAsync(string module, string url, string subnode = "")
         {
             return await InvokeGetAsync<JObject>(module, url, subnode);
@@ -275,6 +321,9 @@ namespace Zoho.Services
 
         public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url, string subnode = "")
         {
+            
+            if (!_options.Modules[module].Enabled)
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
