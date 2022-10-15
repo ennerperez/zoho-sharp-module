@@ -238,6 +238,9 @@ namespace Zoho.Services
         {
             if (input == null) throw new ArgumentNullException("input");
 
+            if (!_options.Modules[module].Enabled)
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
             if (!apiBaseUrl.EndsWith("/"))
@@ -277,6 +280,9 @@ namespace Zoho.Services
         public async Task<TOutput> InvokePutAsync<TOutput>(string module, string url, object input, string subnode = "")
         {
             if (input == null) throw new ArgumentNullException("input");
+            
+            if (!_options.Modules[module].Enabled)
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
@@ -316,6 +322,9 @@ namespace Zoho.Services
 
         public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url, string subnode = "")
         {
+            
+            if (!_options.Modules[module].Enabled)
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
