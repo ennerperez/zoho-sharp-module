@@ -1,4 +1,5 @@
 using Zoho.Interfaces;
+
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -12,6 +13,7 @@ namespace Zoho
             Campaign = campaignService;
             Subscription = subscriptionService;
         }
+
         public IBookService Book { get; }
 
         public ICampaignService Campaign { get; }

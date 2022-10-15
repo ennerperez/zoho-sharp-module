@@ -1,4 +1,5 @@
 ﻿using System;
+
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable once CheckNamespace
 namespace Zoho.Models
@@ -7,6 +8,5 @@ namespace Zoho.Models
     {
         public Exception Error { get; set; }
         public T Data { get; set; }
-
     }
 }
