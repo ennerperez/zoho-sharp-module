@@ -7,11 +7,11 @@ namespace Zoho
 {
     public class Module
     {
-
         public Module()
         {
             Enabled = true;
         }
+
         public string Url { get; set; }
 
         public List<string> Scopes { get; set; }
