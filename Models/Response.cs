@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable once CheckNamespace
@@ -25,9 +26,24 @@ namespace Zoho.Models
         [JsonProperty("page_context")]
         public PageContext PageContext { get; set; }
     }
-
-    public class Response<T> : Response
+    public class ListOfDetails<T> : Response
     {
-        public T Object { get; set; }
+        [JsonProperty("list_of_details")]
+        public IEnumerable<T> Items { get; set; }
+
+        [JsonProperty("requestdetails")]
+        public RequestDetails RequestDetails { get; set; }
     }
+    public class RequestDetails
+    {
+        [JsonProperty("fromindex")]
+        public int From { get; set; }
+        [JsonProperty("range")]
+        public int Range { get; set; }
+        [JsonProperty("sort")]
+        public string Sort { get; set; }
+        [JsonProperty("status")]
+        public string Status { get; set; }
+    }
+    
 }
