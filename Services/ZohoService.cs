@@ -82,7 +82,7 @@ namespace Zoho.Services
 
             if (force) _authToken = string.Empty;
 
-#if EXPIRED_TOKEN
+#if DEBUG && EXPIRED_TOKEN
             if (!force)
             {
                 _authToken = "1000.15c9c29cbac08d7743858b207df507f4.6ef626fe7785f2a46dbc7d297f1b63ec";
@@ -330,7 +330,7 @@ namespace Zoho.Services
                 apiBaseUrl = apiBaseUrl + "/";
 
             url = $"{apiBaseUrl}{url}";
-
+ 
             var retryCount = 0;
             bool IsSuccessStatusCode = false;
             ProcessEntity<TOutput> processResult = null;
