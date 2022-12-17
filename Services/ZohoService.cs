@@ -173,15 +173,15 @@ namespace Zoho.Services
                 }
                 catch (Exception exception)
                 {
-                    return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
+                    return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
                 }
 
-                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred")};
+                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred") };
 
-                return new ProcessEntity<T> {Error = new InvalidOperationException(errorResponse.Message)};
+                return new ProcessEntity<T> { Error = new InvalidOperationException(errorResponse.Message) };
             }
 
-            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> {Data = (T)(object)response.IsSuccessStatusCode};
+            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> { Data = (T)(object)response.IsSuccessStatusCode };
 
             try
             {
@@ -216,15 +216,23 @@ namespace Zoho.Services
                     if (innerNodeContent != null && innerNodeContent.ContainsKey(subnode) && innerNodeContent[subnode] != null)
                     {
                         var data = innerNodeContent[subnode].ToObject<T>();
-                        return new ProcessEntity<T> {Data = data};
+                        return new ProcessEntity<T> { Data = data };
                     }
                 }
 
-                return new ProcessEntity<T> {Data = JsonConvert.DeserializeObject<T>(rawResponseContent)};
+                var result = new ProcessEntity<T> { Data = JsonConvert.DeserializeObject<T>(rawResponseContent) };
+                if (typeof(T).IsAssignableTo(typeof(Response)))
+                {
+                    var isError = (result.Data as Response).Code != 0;
+                    if (isError)
+                        throw new InvalidOperationException((result.Data as Response).Message);
+                }
+
+                return result;
             }
             catch (Exception exception)
             {
-                return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
+                return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
             }
         }
 
@@ -247,7 +255,7 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
             var retryCount = 0;
@@ -290,7 +298,7 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
+            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
             var content = new StringContent(data, Encoding.UTF8, "application/json");
 
             var retryCount = 0;
@@ -330,7 +338,7 @@ namespace Zoho.Services
                 apiBaseUrl = apiBaseUrl + "/";
 
             url = $"{apiBaseUrl}{url}";
- 
+
             var retryCount = 0;
             bool IsSuccessStatusCode = false;
             ProcessEntity<TOutput> processResult = null;
@@ -343,6 +351,13 @@ namespace Zoho.Services
                     await GetTokenAsync(true);
                 else
                     processResult = await ProcessResponse<TOutput>(response, subnode);
+
+                if (processResult.Error != null)
+                {
+                    IsSuccessStatusCode = false;
+                    await GetTokenAsync(true);
+                }
+
                 retryCount++;
             }
 
