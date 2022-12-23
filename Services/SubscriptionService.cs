@@ -52,7 +52,9 @@ namespace Zoho.Services
         public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
         {
             if (input == null)
+            {
                 throw new ArgumentNullException("input");
+            }
 
             var client = await _factory.CreateAsync();
 
@@ -63,14 +65,18 @@ namespace Zoho.Services
         public async Task<bool> SetCardCollect(string subscriptionId, JObject input)
         {
             if (input == null)
+            {
                 throw new ArgumentNullException("input");
+            }
 
             var client = await _factory.CreateAsync();
 
             var response = await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/card", input);
 
             if (null != response && response.Property("Error") != null)
+            {
                 throw new Exception(response.Property("Error")?.Value.ToString());
+            }
 
             return true;
         }
@@ -78,14 +84,18 @@ namespace Zoho.Services
         public async Task<JObject> RequestPaymentMethod(string customerId)
         {
             if (customerId == null)
+            {
                 throw new ArgumentNullException("customerId");
+            }
 
             var client = await _factory.CreateAsync();
 
             var response = await client.InvokeGetAsync("Subscriptions", $"customers/{customerId}/requestpaymentmethod");
 
             if (null != response && response.Property("Error") != null)
+            {
                 throw new Exception(response.Property("Error")?.Value.ToString());
+            }
 
             return response;
         }
@@ -93,7 +103,9 @@ namespace Zoho.Services
         public async Task<List<JObject>> GetCards(string customerId)
         {
             if (customerId == null)
+            {
                 throw new ArgumentNullException("customerId");
+            }
 
             var client = await _factory.CreateAsync();
 

@@ -1,11 +1,27 @@
 ### Step 1: Generating Grant Token (Browser Only)
-GET {{host_accounts}}/oauth/v2/auth?scope={{scopes}}&client_id={{client_id}}&state={{state}}&response_type=code&redirect_uri={{redirect_uri}}&access_type=offline
+GET {{host_accounts}}/oauth/v2/auth?
+    scope={{scopes}}&
+    client_id={{client_id}}&
+    state={{state}}&
+    response_type=code&
+    redirect_uri={{redirect_uri}}&
+    access_type=offline
 
 ### Step 2: Generate Access And Refresh Token
-POST {{host_accounts}}/oauth/v2/token?code={{code}}&client_id={{client_id}}&client_secret={{client_secret}}&redirect_uri={{redirect_uri}}&grant_type=authorization_code
+POST {{host_accounts}}/oauth/v2/token?
+    code={{code}}&
+    client_id={{client_id}}&
+    client_secret={{client_secret}}&
+    redirect_uri={{redirect_uri}}&
+    grant_type=authorization_code
 
 ### Step 2.1: Generate Access Token From Refresh Token
-POST {{host_accounts}}/oauth/v2/token?refresh_token={{refresh_token}}&client_id={{client_id}}&client_secret={{client_secret}}&redirect_uri={{redirect_uri}}&grant_type=refresh_token
+POST {{host_accounts}}/oauth/v2/token?
+    refresh_token={{refresh_token}}&
+    client_id={{client_id}}&
+    client_secret={{client_secret}}&
+    redirect_uri={{redirect_uri}}&
+    grant_type=refresh_token
 
 ### Step 3: Calling An API (List of all products)
 GET {{host_subscriptions}}/api/v1/products

@@ -20,7 +20,10 @@ namespace Zoho.Services
 
         public async Task<JObject> CreateContactAsync(JObject input, string campaignKey)
         {
-            if (input == null) throw new ArgumentNullException("input");
+            if (input == null)
+            {
+                throw new ArgumentNullException("input");
+            }
 
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync("Campaigns", "addlistsubscribersinbulk", input);
@@ -28,7 +31,10 @@ namespace Zoho.Services
 
         public async Task<List<JObject>> GetListSubscribersAsync(string designation)
         {
-            if (string.IsNullOrWhiteSpace(designation)) throw new ArgumentNullException("designation");
+            if (string.IsNullOrWhiteSpace(designation))
+            {
+                throw new ArgumentNullException("designation");
+            }
 
             var client = await _factory.CreateAsync();
 
@@ -41,8 +47,15 @@ namespace Zoho.Services
 
         public async Task<JObject> GetSubscriberAsync(string designation, string email)
         {
-            if (string.IsNullOrWhiteSpace(designation)) throw new ArgumentNullException("designation");
-            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentNullException("email");
+            if (string.IsNullOrWhiteSpace(designation))
+            {
+                throw new ArgumentNullException("designation");
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                throw new ArgumentNullException("email");
+            }
 
             var client = await _factory.CreateAsync();
 
