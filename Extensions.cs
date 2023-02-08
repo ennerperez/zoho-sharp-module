@@ -9,7 +9,7 @@ namespace Zoho
 {
     public static class Extensions
     {
-        public static IServiceCollection AddZohoServices(this IServiceCollection services, Action<Options> configureOptions = null, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        public static IServiceCollection AddZohoServices(this IServiceCollection services, Action<Options> configureOptions, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {
             services.AddHttpClient<ZohoService>("ZohoService");
             services.AddSingleton<Factory>().Configure(configureOptions);
