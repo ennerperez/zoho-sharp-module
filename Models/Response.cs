@@ -26,6 +26,7 @@ namespace Zoho.Models
         [JsonProperty("page_context")]
         public PageContext PageContext { get; set; }
     }
+
     public class ListOfDetails<T> : Response
     {
         [JsonProperty("list_of_details")]
@@ -34,16 +35,19 @@ namespace Zoho.Models
         [JsonProperty("requestdetails")]
         public RequestDetails RequestDetails { get; set; }
     }
+
     public class RequestDetails
     {
         [JsonProperty("fromindex")]
         public int From { get; set; }
+
         [JsonProperty("range")]
         public int Range { get; set; }
+
         [JsonProperty("sort")]
         public string Sort { get; set; }
+
         [JsonProperty("status")]
         public string Status { get; set; }
     }
-    
 }

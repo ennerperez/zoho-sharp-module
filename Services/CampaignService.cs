@@ -61,7 +61,7 @@ namespace Zoho.Services
 
             var listKey = client.GetOption("Campaigns", designation);
             var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active";
-            
+
             var response = await client.InvokeGetAsync<ListOfDetails<JObject>>("Campaigns", endpoint);
 
             return response.Items.FirstOrDefault(m => m.Value<string>("contact_email")?.ToLower().Trim() == email.ToLower().Trim());
