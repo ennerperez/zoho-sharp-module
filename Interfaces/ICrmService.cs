@@ -11,6 +11,7 @@ namespace Zoho.Interfaces
     /// </summary>
     public interface ICrmService : IZohoService
     {
+        Task<JObject> UploadAttachmentAsync(Enums.Module module, string recordId, byte[] input, string filename);
         Task<PageResult<JObject>> GetRecords(Enums.Module module, int perPage = 3, params string[] fields);
         Task<PageResult<T>> GetRecords<T>(Enums.Module module, int perPage = 3, params string[] fields);
         Task<PageResult<JObject>> GetAttachments(Enums.Module module, string recordId, params string[] fields);

@@ -331,6 +331,69 @@ namespace Zoho.Services
             }
         }
 
+        public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input,string fileName,string subnode = "")
+        {
+            if (input == null)
+            {
+                throw new ArgumentNullException(nameof(input));
+            }
+
+            if (!_options.Modules[module].Enabled)
+            {
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+            }
+
+            // Sanity patch for base URL to end with /
+            var apiBaseUrl = _options.Modules[module].Url;
+            if (!apiBaseUrl.EndsWith("/"))
+            {
+                apiBaseUrl = apiBaseUrl + "/";
+            }
+
+            url = $"{apiBaseUrl}{url}";
+
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(new MemoryStream(input));
+            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+            {
+                Name = "file",
+                FileName = fileName
+            };
+            content.Add(fileContent);
+
+            var retryCount = 0;
+            var IsSuccessStatusCode = false;
+            ProcessEntity<TOutput> processResult = null;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.PostAsync(url, content);
+                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await GetTokenAsync(true);
+                }
+                else
+                {
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
+                }
+
+                retryCount++;
+            }
+
+            if (processResult == null)
+            {
+                throw new InvalidOperationException("API call did not completed successfully");
+            }
+            else if (processResult.Error != null)
+            {
+                throw processResult.Error;
+            }
+            else
+            {
+                return processResult.Data;
+            }
+        }
 
         public async Task<JObject> InvokePutAsync(string module, string url, object input, string subnode = "")
         {

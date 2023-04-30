@@ -18,6 +18,14 @@ namespace Zoho.Services
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
         
+        public async Task<JObject> UploadAttachmentAsync(Enums.Module module,string recordId, byte[] input,string filename)
+        {
+            //{api-domain}/crm/{version}/{module_api_name}/{record_id}/Attachments
+            var client = await _factory.CreateAsync();
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_"," ");
+            return await client.InvokePostFileAsync<JObject>("Crm", $"{moduleApiName}/{recordId}/Attachments", input, filename);
+        }
+        
         public async Task<PageResult<JObject>> GetRecords(Enums.Module module, int perPage = 3, params string[] fields)
         {
             return await GetRecords<JObject>(module, perPage, fields);
