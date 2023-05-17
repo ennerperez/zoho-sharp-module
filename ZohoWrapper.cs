@@ -19,5 +19,8 @@ namespace Zoho
         public ICampaignService Campaign { get; }
 
         public ISubscriptionService Subscription { get; }
+        
+        public ICrmService CRM { get; }
+        
     }
 }

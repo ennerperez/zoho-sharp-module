@@ -11,6 +11,8 @@ namespace Zoho.Services
 {
     public class CrmService : ICrmService
     {
+        private string Name => Enum.GetName(Enums.Module.Crm);
+        
         private readonly Factory _factory;
 
         public CrmService(Factory factory)
@@ -23,7 +25,7 @@ namespace Zoho.Services
             //{api-domain}/crm/{version}/{module_api_name}/{record_id}/Attachments
             var client = await _factory.CreateAsync();
             var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_"," ");
-            return await client.InvokePostFileAsync<JObject>("Crm", $"{moduleApiName}/{recordId}/Attachments", input, filename);
+            return await client.InvokePostFileAsync<JObject>(Name, $"{moduleApiName}/{recordId}/Attachments", input, filename);
         }
         
         public async Task<PageResult<JObject>> GetRecords(Enums.Module module, int perPage = 3, params string[] fields)
@@ -38,7 +40,7 @@ namespace Zoho.Services
             
             var client = await _factory.CreateAsync();
             if (fields == null || !fields.Any()) fields = new[] { "Last_Name","Email" };
-            var response = await client.InvokeGetAsync<PageResult<T>>("Crm", $"{moduleApiName}?fields={string.Join(",",fields)}&per_page={perPage}");
+            var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}?fields={string.Join(",",fields)}&per_page={perPage}");
             return response;
         }
 
@@ -54,14 +56,9 @@ namespace Zoho.Services
             
             var client = await _factory.CreateAsync();
             if (fields == null || !fields.Any()) fields = new[] { "id", "Owner", "File_Name", "Created_Time", "Parent_Id" };
-            var response = await client.InvokeGetAsync<PageResult<T>>("Crm", $"{moduleApiName}/{recordId}/Attachments?fields={string.Join(",",fields)}");
+            var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/{recordId}/Attachments?fields={string.Join(",",fields)}");
             return response;
         }
 
-        public async Task<string> GetOption(string key)
-        {
-            var client = await _factory.CreateAsync();
-            return client.GetOption("Crm", key);
-        }
     }
 }

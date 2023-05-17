@@ -4,8 +4,10 @@ namespace Zoho.Enums
 {
     public enum Module
     {
+        Crm,
         Leads,
         Accounts,
+        Subscriptions,
         Contacts,
         Deals,
         Campaigns,
@@ -16,6 +18,7 @@ namespace Zoho.Enums
         Solutions,
         Products,
         Vendors,
+        Books,
         Price_Books,
         Quotes,
         Sales_Orders,
@@ -24,6 +27,7 @@ namespace Zoho.Enums
         Custom,
         Notes, 
         Appointments,
-        Activities
+        Activities,
+        Projects
     }
 }
