@@ -57,6 +57,18 @@ namespace Zoho.Services
 
             return null;
         }
+        
+        public T GetOption<T>(string module, string key)
+        {
+            var keys = _options.Modules[module].Keys;
+            if (keys != null && keys.Any(m => m.Key == key))
+            {
+                var value = keys[key];
+                return (T)Convert.ChangeType(value, typeof(T));
+            }
+
+            return default;
+        }
 
         public void SetHttpClient(bool isPdf = false)
         {

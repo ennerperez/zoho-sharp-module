@@ -10,6 +10,8 @@ namespace Zoho.Services
 {
     public class SubscriptionService : ISubscriptionService
     {
+        private string Name => Enum.GetName(Enums.Module.Subscriptions);
+        
         private readonly Factory _factory;
 
         public SubscriptionService(Factory factory)
@@ -20,33 +22,33 @@ namespace Zoho.Services
         public async Task<JObject> CreateAsync(object input)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Subscriptions", "subscriptions", input);
+            return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
         public async Task<JObject> CreateSubscriptionAsync(object input)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Subscriptions", "hostedpages/newsubscription", input);
+            return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
         }
 
         public async Task<JObject> CreateCustomerAsync(object input)
         {
             var client = await _factory.CreateAsync();
             //https://subscriptions.zoho.com/api/v1/customers
-            return await client.InvokePostAsync("Subscriptions", "customers", input);
+            return await client.InvokePostAsync(Name, "customers", input);
         }
 
         public async Task<JObject> UpdateCustomerAsync(object input, string customerId)
         {
             var client = await _factory.CreateAsync();
             //https://subscriptions.zoho.com/api/v1/customers
-            return await client.InvokePutAsync("Subscriptions", $"customers/{customerId}", input);
+            return await client.InvokePutAsync(Name, $"customers/{customerId}", input);
         }
 
         public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/postpone", input);
+            return await client.InvokePostAsync(Name, $"subscriptions/{subscriptionId}/postpone", input);
         }
 
         public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
@@ -58,7 +60,7 @@ namespace Zoho.Services
 
             var client = await _factory.CreateAsync();
 
-            var response = await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/charge", input);
+            var response = await client.InvokePostAsync(Name, $"subscriptions/{subscriptionId}/charge", input);
             return response;
         }
 
@@ -71,7 +73,7 @@ namespace Zoho.Services
 
             var client = await _factory.CreateAsync();
 
-            var response = await client.InvokePostAsync("Subscriptions", $"subscriptions/{subscriptionId}/card", input);
+            var response = await client.InvokePostAsync(Name, $"subscriptions/{subscriptionId}/card", input);
 
             if (null != response && response.Property("Error") != null)
             {
@@ -90,7 +92,7 @@ namespace Zoho.Services
 
             var client = await _factory.CreateAsync();
 
-            var response = await client.InvokeGetAsync("Subscriptions", $"customers/{customerId}/requestpaymentmethod");
+            var response = await client.InvokeGetAsync(Name, $"customers/{customerId}/requestpaymentmethod");
 
             if (null != response && response.Property("Error") != null)
             {
@@ -109,7 +111,7 @@ namespace Zoho.Services
 
             var client = await _factory.CreateAsync();
 
-            var response = await client.InvokeGetAsync<JObject[]>("Subscriptions", $"customers/{customerId}/cards");
+            var response = await client.InvokeGetAsync<JObject[]>(Name, $"customers/{customerId}/cards");
 
             return response.ToList();
         }
@@ -122,7 +124,7 @@ namespace Zoho.Services
         public async Task<List<T>> GetProducts<T>()
         {
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "products", "products");
+            var response = await client.InvokeGetAsync<T[]>(Name, "products", "products");
             return response.ToList();
         }
 
@@ -135,7 +137,7 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             //https://subscriptions.zoho.com/api/v1/customers
-            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "customers", "customers");
+            var response = await client.InvokeGetAsync<T[]>(Name, "customers", "customers");
             return response.ToList();
         }
 
@@ -147,7 +149,7 @@ namespace Zoho.Services
         public async Task<List<T>> GetPlans<T>()
         {
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "plans", "plans");
+            var response = await client.InvokeGetAsync<T[]>(Name, "plans", "plans");
             return response.ToList();
         }
 
@@ -159,7 +161,7 @@ namespace Zoho.Services
         public async Task<List<T>> GetAddons<T>()
         {
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
+            var response = await client.InvokeGetAsync<T[]>(Name, "addons", "addons");
             return response.ToList();
         }
 
@@ -171,7 +173,7 @@ namespace Zoho.Services
         public async Task<List<T>> GetCoupons<T>()
         {
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "addons", "addons");
+            var response = await client.InvokeGetAsync<T[]>(Name, "addons", "addons");
             return response.ToList();
         }
 
@@ -183,14 +185,9 @@ namespace Zoho.Services
         public async Task<List<T>> GetSubscriptions<T>()
         {
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T[]>("Subscriptions", "subscriptions", "subscriptions");
+            var response = await client.InvokeGetAsync<T[]>(Name, "subscriptions", "subscriptions");
             return response.ToList();
         }
 
-        public async Task<string> GetOption(string key)
-        {
-            var client = await _factory.CreateAsync();
-            return client.GetOption("Subscriptions", key);
-        }
     }
 }

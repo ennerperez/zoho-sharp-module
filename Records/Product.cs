@@ -4,6 +4,7 @@ using System;
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InconsistentNaming
 namespace Zoho.Records
 {
     public record Product(
@@ -16,6 +17,7 @@ namespace Zoho.Records
         int plan_count,
         int addons_count,
         DateTime created_time,
-        DateTime? updated_time);
+        DateTime? updated_time
+    );
 }
 #endif

@@ -1,6 +1,5 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
-
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
@@ -8,7 +7,6 @@ using System;
 namespace Zoho.Records
 {
     public record Subscription(
-        // customer
         string customer_id,
         string created_by,
         string customer_name,

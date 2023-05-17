@@ -8,6 +8,8 @@ namespace Zoho.Services
 {
     public class BookService : IBookService
     {
+        private string Name => Enum.GetName(Enums.Module.Books);
+        
         private readonly Factory _factory;
 
         public BookService(Factory factory)
@@ -18,19 +20,14 @@ namespace Zoho.Services
         public async Task<JObject> CreateBillAsync(JObject input)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Books", "bills", input);
+            return await client.InvokePostAsync(Name, "bills", input);
         }
 
         public async Task<JObject> CreateInvoiceAsync(JObject input)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Books", "invoices", input);
+            return await client.InvokePostAsync(Name, "invoices", input);
         }
 
-        public async Task<string> GetOption(string key)
-        {
-            var client = await _factory.CreateAsync();
-            return client.GetOption("Books", key);
-        }
     }
 }
