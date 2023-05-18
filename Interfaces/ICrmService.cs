@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Models;
 
@@ -17,6 +16,8 @@ namespace Zoho.Interfaces
         
         Task<PageResult<JObject>> GetAttachments(Enums.Module module, string recordId, params string[] fields);
         Task<PageResult<T>> GetAttachments<T>(Enums.Module module, string recordId, params string[] fields);
-        
+
+        Task<Response<string>[]> CreateRecordAsync(Enums.Module module, object input);
+
     }
 }
