@@ -3,12 +3,13 @@
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InconsistentNaming
-namespace Zoho.Records
+namespace Zoho.Records.Project
 {
-    public record TaskCount(
-        int closed,
-        int open
+    public record Status(
+        string name,
+        string id,
+        string type,
+        string color_code
     );
 }
-
 #endif
