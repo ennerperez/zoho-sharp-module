@@ -30,6 +30,8 @@ namespace Zoho.Services
         private static string _authToken;
         protected internal static string AuthToken => _authToken;
 
+        public JsonSerializerSettings SerializerSettings { get; set; }
+
         internal HttpClient HttpClient => _httpClient;
 
         public ZohoService(IOptionsMonitor<Options> optionsMonitor, HttpClient httpClient, ILoggerFactory loggerFactory) //, Utf8JsonSerializer jsonSerializer
@@ -306,8 +308,8 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var content = new StringContent(data, Encoding.UTF8, "application/json");
+            var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
 
             var retryCount = 0;
             var IsSuccessStatusCode = false;
@@ -433,8 +435,8 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, new JsonSerializerSettings {NullValueHandling = NullValueHandling.Ignore});
             var content = new StringContent(data, Encoding.UTF8, "application/json");
+            var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
 
             var retryCount = 0;
             var IsSuccessStatusCode = false;

@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Zoho.Interfaces;
 using Zoho.Services;
 
 // ReSharper disable once CheckNamespace
@@ -18,9 +20,12 @@ namespace Zoho
             _options = optionsMonitor.CurrentValue;
         }
 
+        public JsonSerializerSettings SerializerSettings { get; set; }
+
         public async Task<ZohoService> CreateAsync()
         {
             var client = _serviceProvider.GetRequiredService<ZohoService>();
+            client.SerializerSettings = SerializerSettings ?? new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             client.Configure(_options);
             if (string.IsNullOrEmpty(ZohoService.AuthToken))
             {

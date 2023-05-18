@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
@@ -18,6 +19,10 @@ namespace Zoho.Services
         public CrmService(Factory factory)
         {
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            _factory.SerializerSettings = new JsonSerializerSettings()
+            {
+                ContractResolver = new DefaultContractResolver()
+            };
         }
         
         public async Task<JObject> UploadAttachmentAsync(Enums.Module module,string recordId, byte[] input,string filename)
