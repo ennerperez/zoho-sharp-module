@@ -86,7 +86,7 @@ namespace Zoho.Services
             _httpClient.DefaultRequestHeaders.CacheControl.NoStore = true;
 
             _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ? "application/pdf" : "application/json"));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ?System.Net.Mime.MediaTypeNames.Application.Pdf : System.Net.Mime.MediaTypeNames.Application.Json));
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("authorization", string.Format(CultureInfo.InvariantCulture, "Zoho-oauthtoken {0}", AuthToken));
@@ -126,7 +126,7 @@ namespace Zoho.Services
                 var httpClient = new HttpClient();
 
                 httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(System.Net.Mime.MediaTypeNames.Application.Json));
                 httpClient.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("en_US"));
 
                 using (var content = new MultipartFormDataContent())
@@ -308,8 +308,8 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var content = new StringContent(data, Encoding.UTF8, "application/json");
             var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
+            var content = new StringContent(data, Encoding.UTF8, System.Net.Mime.MediaTypeNames.Application.Json);
 
             var retryCount = 0;
             var IsSuccessStatusCode = false;
@@ -435,8 +435,8 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var content = new StringContent(data, Encoding.UTF8, "application/json");
             var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
+            var content = new StringContent(data, Encoding.UTF8, System.Net.Mime.MediaTypeNames.Application.Json);
 
             var retryCount = 0;
             var IsSuccessStatusCode = false;
