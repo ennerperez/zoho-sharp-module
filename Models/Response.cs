@@ -6,10 +6,14 @@ using Newtonsoft.Json;
 // ReSharper disable ClassNeverInstantiated.Global
 namespace Zoho.Models
 {
-    public class Response
+    public class Response : Response<int>
+    {
+        
+    }
+    public class Response<TCode>
     {
         [JsonProperty("code")]
-        public int Code { get; set; }
+        public TCode Code { get; set; }
 
         [JsonProperty("message")]
         public string Message { get; set; }
@@ -25,6 +29,15 @@ namespace Zoho.Models
 
         [JsonProperty("page_context")]
         public PageContext PageContext { get; set; }
+        
+        [JsonProperty("details")]
+        public ResponseDetails Details { get; set; }
+    }
+
+    public class ResponseDetails
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class ListOfDetails<T> : Response
@@ -33,7 +46,7 @@ namespace Zoho.Models
         public IEnumerable<T> Items { get; set; }
 
         [JsonProperty("requestdetails")]
-        public RequestDetails RequestDetails { get; set; }
+        public RequestDetails Details { get; set; }
     }
 
     public class RequestDetails
