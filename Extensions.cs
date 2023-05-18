@@ -21,6 +21,7 @@ namespace Zoho
                     services.AddSingleton<ICampaignService, CampaignService>().Configure(configureOptions);
                     services.AddSingleton<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
                     services.AddSingleton<ICrmService, CrmService>().Configure(configureOptions);
+                    services.AddSingleton<IProjectService, ProjectService>().Configure(configureOptions);
                     services.AddSingleton<ZohoWrapper>();
                     break;
                 case ServiceLifetime.Scoped:
@@ -28,6 +29,7 @@ namespace Zoho
                     services.AddScoped<ICampaignService, CampaignService>().Configure(configureOptions);
                     services.AddScoped<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
                     services.AddScoped<ICrmService, CrmService>().Configure(configureOptions);
+                    services.AddScoped<IProjectService, ProjectService>().Configure(configureOptions);
                     services.AddScoped<ZohoWrapper>();
                     break;
                 case ServiceLifetime.Transient:
@@ -35,6 +37,7 @@ namespace Zoho
                     services.AddTransient<ICampaignService, CampaignService>().Configure(configureOptions);
                     services.AddTransient<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
                     services.AddTransient<ICrmService, CrmService>().Configure(configureOptions);
+                    services.AddTransient<IProjectService, ProjectService>().Configure(configureOptions);
                     services.AddTransient<ZohoWrapper>();
                     break;
             }

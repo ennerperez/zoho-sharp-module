@@ -7,11 +7,13 @@ namespace Zoho
 {
     public sealed class ZohoWrapper
     {
-        public ZohoWrapper(IBookService bookService, ICampaignService campaignService, ISubscriptionService subscriptionService)
+        public ZohoWrapper(IBookService bookService, ICampaignService campaignService, ISubscriptionService subscriptionService, ICrmService crm, IProjectService project)
         {
             Book = bookService;
             Campaign = campaignService;
             Subscription = subscriptionService;
+            CRM = crm;
+            Project = project;
         }
 
         public IBookService Book { get; }
@@ -22,5 +24,6 @@ namespace Zoho
         
         public ICrmService CRM { get; }
         
+        public IProjectService Project { get; }
     }
 }
