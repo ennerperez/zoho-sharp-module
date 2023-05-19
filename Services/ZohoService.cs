@@ -1,6 +1,7 @@
 ﻿//#define EXPIRED_TOKEN
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace Zoho.Services
 
             return null;
         }
-        
+
         public T GetOption<T>(string module, string key)
         {
             var keys = _options.Modules[module].Keys;
@@ -86,7 +87,7 @@ namespace Zoho.Services
             _httpClient.DefaultRequestHeaders.CacheControl.NoStore = true;
 
             _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ?System.Net.Mime.MediaTypeNames.Application.Pdf : System.Net.Mime.MediaTypeNames.Application.Json));
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(isPdf ? System.Net.Mime.MediaTypeNames.Application.Pdf : System.Net.Mime.MediaTypeNames.Application.Json));
 
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Add("authorization", string.Format(CultureInfo.InvariantCulture, "Zoho-oauthtoken {0}", AuthToken));
@@ -212,15 +213,15 @@ namespace Zoho.Services
                 }
                 catch (Exception exception)
                 {
-                    return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
+                    return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
                 }
 
-                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred")};
+                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred") };
 
-                return new ProcessEntity<T> {Error = new InvalidOperationException(errorResponse.Message)};
+                return new ProcessEntity<T> { Error = new InvalidOperationException(errorResponse.Message) };
             }
 
-            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> {Data = (T)(object)response.IsSuccessStatusCode};
+            if (typeof(T) == typeof(bool)) return new ProcessEntity<T> { Data = (T)(object)response.IsSuccessStatusCode };
 
             try
             {
@@ -262,11 +263,11 @@ namespace Zoho.Services
                     if (innerNodeContent != null && innerNodeContent.ContainsKey(subnode) && innerNodeContent[subnode] != null)
                     {
                         var data = innerNodeContent[subnode].ToObject<T>();
-                        return new ProcessEntity<T> {Data = data};
+                        return new ProcessEntity<T> { Data = data };
                     }
                 }
 
-                var result = new ProcessEntity<T> {Data = JsonConvert.DeserializeObject<T>(rawResponseContent)};
+                var result = new ProcessEntity<T> { Data = JsonConvert.DeserializeObject<T>(rawResponseContent) };
                 if (typeof(T).IsAssignableTo(typeof(Response)))
                 {
                     var isError = (result.Data as Response).Code != 0;
@@ -278,7 +279,7 @@ namespace Zoho.Services
             }
             catch (Exception exception)
             {
-                return new ProcessEntity<T> {Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception)};
+                return new ProcessEntity<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
             }
         }
 
@@ -355,7 +356,7 @@ namespace Zoho.Services
             }
         }
 
-        public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input,string fileName,string subnode = "")
+        public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input, string fileName, string subnode = "")
         {
             if (input == null)
             {
@@ -378,11 +379,7 @@ namespace Zoho.Services
 
             var content = new MultipartFormDataContent();
             var fileContent = new StreamContent(new MemoryStream(input));
-            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-            {
-                Name = "file",
-                FileName = fileName
-            };
+            fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data") { Name = "file", FileName = fileName };
             content.Add(fileContent);
 
             var retryCount = 0;
