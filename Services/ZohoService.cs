@@ -287,7 +287,7 @@ namespace Zoho.Services
             return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "")
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)
         {
             if (input == null)
             {
@@ -308,8 +308,18 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
-            var content = new StringContent(data, Encoding.UTF8, System.Net.Mime.MediaTypeNames.Application.Json);
+            HttpContent content;
+            if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
+            {
+                var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
+                content = new StringContent(data, Encoding.UTF8, mediaType);
+            } 
+            else
+            {
+                var props = input.GetType().GetProperties();
+                var values = props.Select(m => new KeyValuePair<string, string>(m.Name, m.GetValue(input)?.ToString()));
+                content = new FormUrlEncodedContent(values);
+            }
 
             var retryCount = 0;
             var IsSuccessStatusCode = false;
@@ -414,7 +424,7 @@ namespace Zoho.Services
             return await InvokePutAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePutAsync<TOutput>(string module, string url, object input, string subnode = "")
+        public async Task<TOutput> InvokePutAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)
         {
             if (input == null)
             {
@@ -435,9 +445,19 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
-            var content = new StringContent(data, Encoding.UTF8, System.Net.Mime.MediaTypeNames.Application.Json);
-
+            HttpContent content;
+            if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
+            {
+                var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
+                content = new StringContent(data, Encoding.UTF8, mediaType);
+            } 
+            else
+            {
+                var props = input.GetType().GetProperties();
+                var values = props.Select(m => new KeyValuePair<string, string>(m.Name, m.GetValue(input)?.ToString()));
+                content = new FormUrlEncodedContent(values);
+            }
+            
             var retryCount = 0;
             var IsSuccessStatusCode = false;
             ProcessEntity<TOutput> processResult = null;
