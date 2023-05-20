@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 #if NET6_0_OR_GREATER
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
@@ -29,8 +31,10 @@ namespace Zoho.Records.Project
         string name,
         string updated_by,
         string updated_by_id,
-        string created_by_id
+        string created_by_id,
+        List<Task> tasks
     );
+    
 };
 
 #endif

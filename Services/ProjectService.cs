@@ -43,9 +43,16 @@ namespace Zoho.Services
             return response;
         }
 
-        public Task<JObject> UpdateTask(long projectId, string taskId, object input, long? portalId = null)
+        /// <summary>
+        /// POST  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/
+        /// </summary>
+        /// <returns></returns>
+        public async Task<JObject> UpdateTask(long projectId, string taskId, object input, long? portalId = null)
         {
-            throw new NotImplementedException();
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/",input, mediaType: string.Empty);
+            return response;
         }
 
         /// <summary>
@@ -60,18 +67,6 @@ namespace Zoho.Services
             var encodedToSearch = Uri.EscapeDataString(search);
             
             var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/search?search_term={encodedToSearch}/","tasks");
-            return response;
-        }
-        
-        /// <summary>
-        /// POST  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/
-        /// </summary>
-        /// <returns></returns>
-        public async Task<JObject> UpdateTask(long projectId,string taskId,JObject input, long? portalId = null)
-        {
-            var client = await _factory.CreateAsync();
-            portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/",input);
             return response;
         }
 

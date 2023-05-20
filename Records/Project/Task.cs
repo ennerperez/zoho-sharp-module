@@ -13,7 +13,8 @@ namespace Zoho.Records.Project
         CustomField[] custom_fields,
         Status status,
         bool completed,
-        string priority
+        string priority,
+        string description
     );
 }
 #endif
