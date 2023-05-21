@@ -35,7 +35,7 @@ namespace Zoho.Services
         /// /portal/[PORTALID]/projects/[PROJECTID]/tasks/
         /// </summary>
         /// <returns></returns>
-        public async Task<T[]> GetTasks<T>(long projectId, long? portalId = null)
+        public async Task<T[]> GetTasks<T>(string projectId, long? portalId = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
@@ -47,7 +47,7 @@ namespace Zoho.Services
         /// POST  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/
         /// </summary>
         /// <returns></returns>
-        public async Task<JObject> UpdateTask(long projectId, string taskId, object input, long? portalId = null)
+        public async Task<JObject> UpdateTask(string projectId, string taskId, object input, long? portalId = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");

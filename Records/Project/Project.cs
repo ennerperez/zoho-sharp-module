@@ -19,7 +19,7 @@ namespace Zoho.Records.Project
         TaskCount task_count,
         string updated_date_format,
         string bug_defaultview,
-        long id,
+        string id,
         bool is_chat_enabled,
         bool is_sprints_project,
         string owner_name,
