@@ -32,7 +32,8 @@ namespace Zoho.Records.Project
         string updated_by,
         string updated_by_id,
         string created_by_id,
-        List<Task> tasks
+        List<Task> tasks,
+        List<Task> subTasks
     );
     
 };

@@ -44,6 +44,40 @@ namespace Zoho.Services
         }
 
         /// <summary>
+        /// GET  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/subtasks/
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="taskId"></param>
+        /// <param name="portalId"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<T[]> GetSubTasks<T>(string projectId, string taskId, long? portalId = null)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/subtasks/","tasks");
+            return response;
+        }
+
+        /// <summary>
+        /// GET /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="taskId"></param>
+        /// <param name="portalId"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<T[]> GetTaskAttachments<T>(string projectId, string taskId, long? portalId = null)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/");
+            return response;
+        }
+
+        /// <summary>
         /// POST  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/
         /// </summary>
         /// <returns></returns>

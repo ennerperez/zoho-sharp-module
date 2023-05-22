@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 #if NET6_0_OR_GREATER
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -14,7 +15,8 @@ namespace Zoho.Records.Project
         Status status,
         bool completed,
         string priority,
-        string description
+        string description,
+        bool subtasks
     );
 }
 #endif
