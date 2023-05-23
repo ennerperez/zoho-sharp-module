@@ -16,5 +16,9 @@ namespace Zoho.Interfaces
         Task<T[]> GetTasksSearch<T>(long projectId, long? portalId,string search);
 
         Task<JObject> CreatedProject(object input, long? portalId = null);
+
+        Task<JObject> UploadAttachmentTask(string projectId, string taskId, byte[] input, long? portalId = null);
+        Task<T[]> GetAttachmentsTask<T>(string projectId, string taskId, long? portalId = null);
+        Task<T[]> GetDocumentsTask<T>(string projectId, long? portalId = null);
     }
 }

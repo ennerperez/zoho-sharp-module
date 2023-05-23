@@ -112,5 +112,47 @@ namespace Zoho.Services
             var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/",input, mediaType: string.Empty);
             return response;
         }
+
+        /// <summary>
+        /// POST /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="portalId"></param>
+        /// <returns></returns>
+        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId,byte[] input, long? portalId = null)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/",input, mediaType: string.Empty);
+            return response;
+        }
+
+        /// <summary>
+        /// GET /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
+        /// </summary>
+        /// <returns></returns>
+        public async Task<T[]> GetAttachmentsTask<T>(string projectId, string taskId, long? portalId = null)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/");
+            return response;
+        }
+
+        /// <summary>
+        /// GET /portal/[PORTALID]/projects/[PROJECTID]/documents/
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="portalId"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<T[]> GetDocumentsTask<T>(string projectId, long? portalId = null)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/documents/");
+            return response;
+        }
     }
 }
