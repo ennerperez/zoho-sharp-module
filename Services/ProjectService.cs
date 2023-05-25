@@ -1,7 +1,11 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Interfaces;
+using Zoho.Structures;
 
 namespace Zoho.Services
 {
@@ -119,13 +123,24 @@ namespace Zoho.Services
         /// <param name="input"></param>
         /// <param name="portalId"></param>
         /// <param name="projectId"></param>
+        /// <param name="attachments"></param>
         /// <returns></returns>
-        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId, byte[] input, long? portalId = null)
+        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId, long? portalId = null, Dictionary<string, Zoho.Structures.Attachment> attachments = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/", input, mediaType: string.Empty);
-            return response;
+            
+            var response1 = await client.InvokePostAsync<JObject[]>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/attachments", "upload_file", attachments: attachments, subnode:"attachment");
+            if (response1 != null)
+            {
+                var attachment_ids = response1.Select(m => m["attachment_id"].Value<string>()).ToArray();
+                //"https://projects.zoho.com/api/v3/portal/777023207/projects/1947441000000114005/tasks/1947441000000115008/attachments"
+                //var response2 = await client.InvokePostAsync<JObject>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments", attachment_ids, mediaType: "MultipartFormData");
+                var response2 = await client.InvokePostZohoPdfAsync<JObject>( $"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments", attachment_ids);
+               return response2;
+            }
+
+            return null;
         }
 
         /// <summary>

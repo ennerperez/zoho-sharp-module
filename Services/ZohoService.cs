@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -288,9 +289,9 @@ namespace Zoho.Services
             return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Zoho.Structures.Attachment> attachments = null)
         {
-            if (input == null)
+            if (input == null && attachments == null)
             {
                 throw new ArgumentNullException("input");
             }
@@ -300,17 +301,80 @@ namespace Zoho.Services
                 throw new InvalidOperationException($"The required module ({module}) is not enabled");
             }
 
-            // Sanity patch for base URL to end with /
-            var apiBaseUrl = _options.Modules[module].Url;
-            if (!apiBaseUrl.EndsWith("/"))
+            if (!url.StartsWith("http"))
             {
-                apiBaseUrl = apiBaseUrl + "/";
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
+
+                url = $"{apiBaseUrl}{url}";
             }
 
-            url = $"{apiBaseUrl}{url}";
+            HttpContent content = null;
+            if (mediaType == "MultipartFormData")
+            {
+                content = new MultipartFormDataContent();
+                var props = input.GetType().GetProperties();
+                var values = props.Select(m => new KeyValuePair<string, string>(m.Name, m.GetValue(input)?.ToString()));
+                foreach (var value in values)
+                {
+                    (content as MultipartFormDataContent).Add(new StringContent(value.Value), value.Key);
+                }
+            }
+            else if (attachments != null && attachments.Any())
+            {
+                var isAuthorized = false;
+                var attemptCount = 0;
+                HttpResponseMessage response2 = null;    
+                ProcessEntity<TOutput> processResultFile = null;
+                while (!isAuthorized && attemptCount <= 3)
+                {
+                    var client2 = new HttpClient();
+                    var request2 = new HttpRequestMessage(HttpMethod.Post, "https://projects.zoho.com/api/v3/portal/777023207/attachments");
+                    var bearer = $"Bearer {AuthToken}";
+                    request2.Headers.Add("Authorization", bearer);
+                    //request2.Headers.Add("Cookie", "906475c51c=7f345f363adec38c7a11fb62ec02d1c1; JSESSIONID=4FF925555EA8295AD0D52A7BFEF9B716; _zcsr_tmp=641755b7-d70c-4c66-b4a7-6823b3fd6c56; zpct=641755b7-d70c-4c66-b4a7-6823b3fd6c56");
+                    content = new MultipartFormDataContent();
+                    foreach (var item in attachments)
+                    {
+                        var tempFile = Path.GetTempFileName();
+                        await File.WriteAllBytesAsync(tempFile, item.Value.Bytes);
+                        (content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead(tempFile)), input.ToString(), item.Key);
+                        if (item.Value.Details != null)
+                        {
+                            var jsonDetailValue = JsonConvert.SerializeObject(item.Value.Details, Formatting.None);
+                            (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
+                        }
+                    }
+                    
+                    request2.Content = content;
+                    response2 = await client2.SendAsync(request2);
+                    response2.EnsureSuccessStatusCode();
+                    if (response2.StatusCode == HttpStatusCode.Unauthorized)
+                    {
+                        await GetTokenAsync(true);
+                    }
+                    else
+                    {
+                        isAuthorized = true;
+                        break;
+                    }
+                    attemptCount++;
+                }
 
-            HttpContent content;
-            if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
+                if (response2 != null)
+                {
+                    processResultFile = await ProcessResponse<TOutput>(response2, subnode);
+                }
+
+                if (processResultFile != null)
+                {
+                    return processResultFile.Data;
+                }
+            }
+            else if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
             {
                 var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
                 content = new StringContent(data, Encoding.UTF8, mediaType);
@@ -330,7 +394,10 @@ namespace Zoho.Services
                 SetHttpClient();
                 var response = await _httpClient.PostAsync(url, content);
                 IsSuccessStatusCode = response.IsSuccessStatusCode;
-                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    IsSuccessStatusCode = true;
+                }else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await GetTokenAsync(true);
                 }
@@ -356,6 +423,50 @@ namespace Zoho.Services
             }
         }
 
+        public async Task<TOutput> InvokePostZohoPdfAsync<TOutput>(string url, string[] attachmentsIds, string subnode = "")
+        {
+            HttpContent content = null;
+            var isAuthorized2 = false;
+            var attemptCount2 = 0;
+            HttpResponseMessage response = null;    
+            ProcessEntity<TOutput> processResultFile2 = null;
+            while (!isAuthorized2 && attemptCount2 <= 3)
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                var bearer = $"Bearer {AuthToken}";
+                request.Headers.Add("Authorization", bearer);
+                //request.Headers.Add("Cookie", "906475c51c=7f345f363adec38c7a11fb62ec02d1c1; JSESSIONID=4FF925555EA8295AD0D52A7BFEF9B716; _zcsr_tmp=641755b7-d70c-4c66-b4a7-6823b3fd6c56; zpct=641755b7-d70c-4c66-b4a7-6823b3fd6c56");
+                content = new MultipartFormDataContent();
+                var jsonDetailValue = JsonConvert.SerializeObject(attachmentsIds, Formatting.None);
+                (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_ids");
+                request.Content = content;
+                response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await GetTokenAsync(true);
+                    isAuthorized2 = true;
+                }
+                else
+                {
+                    break;
+                }
+                attemptCount2++;
+            }
+
+            if (response != null)
+            {
+                processResultFile2 = await ProcessResponse<TOutput>(response, subnode);
+            }
+
+            if (processResultFile2 != null)
+            {
+                return processResultFile2.Data;
+            }
+
+            throw processResultFile2.Error;
+        }
         public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input, string fileName, string subnode = "")
         {
             if (input == null)
@@ -368,14 +479,16 @@ namespace Zoho.Services
                 throw new InvalidOperationException($"The required module ({module}) is not enabled");
             }
 
-            // Sanity patch for base URL to end with /
-            var apiBaseUrl = _options.Modules[module].Url;
-            if (!apiBaseUrl.EndsWith("/"))
+            if (!url.StartsWith("http"))
             {
-                apiBaseUrl = apiBaseUrl + "/";
-            }
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
 
-            url = $"{apiBaseUrl}{url}";
+                url = $"{apiBaseUrl}{url}";
+            }
 
             var content = new MultipartFormDataContent();
             var fileContent = new StreamContent(new MemoryStream(input));
@@ -433,14 +546,16 @@ namespace Zoho.Services
                 throw new InvalidOperationException($"The required module ({module}) is not enabled");
             }
 
-            // Sanity patch for base URL to end with /
-            var apiBaseUrl = _options.Modules[module].Url;
-            if (!apiBaseUrl.EndsWith("/"))
+            if (!url.StartsWith("http"))
             {
-                apiBaseUrl = apiBaseUrl + "/";
-            }
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
 
-            url = $"{apiBaseUrl}{url}";
+                url = $"{apiBaseUrl}{url}";
+            }
 
             HttpContent content;
             if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
@@ -502,14 +617,16 @@ namespace Zoho.Services
                 throw new InvalidOperationException($"The required module ({module}) is not enabled");
             }
 
-            // Sanity patch for base URL to end with /
-            var apiBaseUrl = _options.Modules[module].Url;
-            if (!apiBaseUrl.EndsWith("/"))
+            if (!url.StartsWith("http"))
             {
-                apiBaseUrl = apiBaseUrl + "/";
-            }
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
 
-            url = $"{apiBaseUrl}{url}";
+                url = $"{apiBaseUrl}{url}";
+            }
 
             var retryCount = 0;
             var isSuccessStatusCode = false;
