@@ -328,27 +328,23 @@ namespace Zoho.Services
                 //await GetTokenAsync(true);
                 ProcessEntity<TOutput> processResultFile = null;
                 var client3 = new HttpClient();
-                var request3 = new HttpRequestMessage(HttpMethod.Post, "https://projects.zoho.com/api/v3/portal/777023207/attachments");
+                var request3 = new HttpRequestMessage(HttpMethod.Post, url);
                 var bearer = $"Bearer {AuthToken}";
                 request3.Headers.Add("Authorization", bearer);
                 //request3.Headers.Add("Cookie", "906475c51c=7f345f363adec38c7a11fb62ec02d1c1; JSESSIONID=EAC5A7F20EBC9FC0ED77750F4B452194; _zcsr_tmp=641755b7-d70c-4c66-b4a7-6823b3fd6c56; zpct=641755b7-d70c-4c66-b4a7-6823b3fd6c56");
                 content = new MultipartFormDataContent();
-                //content3.Add(new StreamContent(File.OpenRead("C:/Users/edgar/Downloads/2023-03-27_18-27.pdf")), "upload_file", "C:/Users/edgar/Downloads/2023-03-27_18-27.pdf");
                 foreach (var item in attachments)
                 {
                     var tempFile = Path.GetTempFileName();
                     await File.WriteAllBytesAsync(tempFile, item.Value.Bytes);
                     (content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead(tempFile)), input.ToString(), item.Key);
-                    //(content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead("C:/Users/edgar/Downloads/2023-03-27_18-27.pdf")), "upload_file", "C:/Users/edgar/Downloads/2023-03-27_18-27.pdf");
-                    // if (item.Value.Details != null)
-                    // {
-                    //     var jsonDetailValue = JsonConvert.SerializeObject(item.Value.Details, Formatting.None);
-                    //     (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
-                    // }
-                    (content as MultipartFormDataContent).Add(new StringContent("{\"location_details\":{\"folder_id\":\"-1\",\"project_id\":\"1947441000000114005\"},\"storage_type\":\"workdrive\"}"), "attachment_details");
+                    if (item.Value.Details == null)
+                        continue;
+
+                    var jsonDetailValue = JsonConvert.SerializeObject(item.Value.Details, Formatting.None);
+                    (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
+                    //(content as MultipartFormDataContent).Add(new StringContent("{\"location_details\":{\"folder_id\":\"-1\",\"project_id\":\"1947441000000114005\"},\"storage_type\":\"workdrive\"}"), "attachment_details");
                 }
-                //(content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead("C:/Users/edgar/Downloads/2023-03-27_18-27.pdf")), "upload_file", "C:/Users/edgar/Downloads/2023-03-27_18-27.pdf");
-                
                 request3.Content = content;
                 var response3 = await client3.SendAsync(request3);
                 response3.EnsureSuccessStatusCode();
