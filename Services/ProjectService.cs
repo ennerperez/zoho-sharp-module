@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Interfaces;
 using Zoho.Structures;
+using Task = Zoho.Records.Project.Task;
 
 namespace Zoho.Services
 {
@@ -84,11 +85,11 @@ namespace Zoho.Services
         /// POST  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/
         /// </summary>
         /// <returns></returns>
-        public async Task<JObject> UpdateTask(string projectId, string taskId, object input, long? portalId = null)
+        public async Task<Task> UpdateTask(string projectId, string taskId, object input, long? portalId = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/", input, mediaType: string.Empty);
+            var response = await client.InvokePostAsync<Task>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/", input, mediaType: string.Empty);
             return response;
         }
 

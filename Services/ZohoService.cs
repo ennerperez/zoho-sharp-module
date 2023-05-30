@@ -325,38 +325,48 @@ namespace Zoho.Services
             }
             else if (attachments != null && attachments.Any())
             {
-                //await GetTokenAsync(true);
+                var slap = 0;
+                var liberty = false;
                 ProcessEntity<TOutput> processResultFile = null;
-                var client3 = new HttpClient();
-                var request3 = new HttpRequestMessage(HttpMethod.Post, url);
-                var bearer = $"Bearer {AuthToken}";
-                request3.Headers.Add("Authorization", bearer);
-                //request3.Headers.Add("Cookie", "906475c51c=7f345f363adec38c7a11fb62ec02d1c1; JSESSIONID=EAC5A7F20EBC9FC0ED77750F4B452194; _zcsr_tmp=641755b7-d70c-4c66-b4a7-6823b3fd6c56; zpct=641755b7-d70c-4c66-b4a7-6823b3fd6c56");
-                content = new MultipartFormDataContent();
-                foreach (var item in attachments)
+                while (slap < 3)
                 {
-                    var tempFile = Path.GetTempFileName();
-                    await File.WriteAllBytesAsync(tempFile, item.Value.Bytes);
-                    (content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead(tempFile)), input.ToString(), item.Key);
-                    if (item.Value.Details == null)
-                        continue;
+                    var client3 = new HttpClient();
+                    var request3 = new HttpRequestMessage(HttpMethod.Post, url);
+                    var bearer = $"Bearer {AuthToken}";
+                    request3.Headers.Add("Authorization", bearer);
+                    request3.Headers.Add("Cookie", "906475c51c=7f345f363adec38c7a11fb62ec02d1c1; JSESSIONID=EAC5A7F20EBC9FC0ED77750F4B452194; _zcsr_tmp=641755b7-d70c-4c66-b4a7-6823b3fd6c56; zpct=641755b7-d70c-4c66-b4a7-6823b3fd6c56");
+                    content = new MultipartFormDataContent();
+                    foreach (var item in attachments)
+                    {
+                        var tempFile = Path.GetTempFileName();
+                        await File.WriteAllBytesAsync(tempFile, item.Value.Bytes);
+                        (content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead(tempFile)), input.ToString(), item.Key);
+                        if (item.Value.Details == null)
+                            continue;
+    
+                        var jsonDetailValue = JsonConvert.SerializeObject(item.Value.Details, Formatting.None);
+                        (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
+                        //(content as MultipartFormDataContent).Add(new StringContent("{\"location_details\":{\"folder_id\":\"-1\",\"project_id\":\"1947441000000114005\"},\"storage_type\":\"workdrive\"}"), "attachment_details");
+                    }
+                    request3.Content = content;
+                    var responseZohoFile = await client3.SendAsync(request3);
+                    responseZohoFile.EnsureSuccessStatusCode();
 
-                    var jsonDetailValue = JsonConvert.SerializeObject(item.Value.Details, Formatting.None);
-                    (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
-                    //(content as MultipartFormDataContent).Add(new StringContent("{\"location_details\":{\"folder_id\":\"-1\",\"project_id\":\"1947441000000114005\"},\"storage_type\":\"workdrive\"}"), "attachment_details");
-                }
-                request3.Content = content;
-                var response3 = await client3.SendAsync(request3);
-                response3.EnsureSuccessStatusCode();
-                if (response3 != null)
-                {
-                    processResultFile = await ProcessResponse<TOutput>(response3, subnode);
+                    if (responseZohoFile.StatusCode == HttpStatusCode.Created)
+                    {
+                        processResultFile = await ProcessResponse<TOutput>(responseZohoFile, subnode);
+                        break;
+                    }
+                    if (responseZohoFile.StatusCode == HttpStatusCode.Unauthorized)
+                        await GetTokenAsync(true);
+
+                    slap++;
                 }
                 if (processResultFile != null)
                 {
                     return processResultFile.Data;
                 }
-                throw processResultFile.Error;
+                throw new InvalidOperationException("API call did not completed successfully");
             }
             else if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
             {
@@ -380,6 +390,7 @@ namespace Zoho.Services
                 IsSuccessStatusCode = response.IsSuccessStatusCode;
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
                     IsSuccessStatusCode = true;
                 }else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -451,6 +462,7 @@ namespace Zoho.Services
 
             throw processResultFile2.Error;
         }
+        
         public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input, string fileName, string subnode = "")
         {
             if (input == null)
