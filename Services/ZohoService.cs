@@ -326,7 +326,6 @@ namespace Zoho.Services
             else if (attachments != null && attachments.Any())
             {
                 var slap = 0;
-                var liberty = false;
                 ProcessEntity<TOutput> processResultFile = null;
                 while (slap < 3)
                 {
