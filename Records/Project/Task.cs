@@ -1,4 +1,8 @@
-﻿#if NET6_0_OR_GREATER
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+#if NET6_0_OR_GREATER
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
@@ -8,6 +12,8 @@ namespace Zoho.Records.Project
     public record Task(
         string id,
         string name,
+        DateTime start_date_format,
+        DateTime end_date_format,
         CustomField[] custom_fields,
         Status status,
         bool completed,
