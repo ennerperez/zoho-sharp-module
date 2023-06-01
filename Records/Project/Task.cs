@@ -13,7 +13,8 @@ namespace Zoho.Records.Project
         bool completed,
         string priority,
         string description,
-        bool subtasks
+        bool subtasks,
+        Zoho.Records.Project.Attachtment[] attachments
     );
 }
 #endif

@@ -153,14 +153,14 @@ namespace Zoho.Services
         }
 
         /// <summary>
-        /// GET /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
+        /// GET https://projects.zoho.com/api/v3/portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments
         /// </summary>
         /// <returns></returns>
         public async Task<T[]> GetAttachmentsTask<T>(string projectId, string taskId, long? portalId = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments",subnode:"attachment");
             return response;
         }
 
