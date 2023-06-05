@@ -1,5 +1,7 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
+using System.Collections.Generic;
+
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
@@ -18,11 +20,14 @@ namespace Zoho.Records
         DateTime? next_billing_at,
         DateTime? last_billing_at,
         string plan_code,
+        string plan_name,
         string subscription_id,
         string subscription_number,
         DateTime activated_at,
         DateTime created_time,
-        DateTime? updated_time
+        DateTime? updated_time,
+        Plan plan,
+        Addon[] addons 
     );
 }
 #endif
