@@ -14,8 +14,8 @@ namespace Zoho.Records.Project
         string bug_client_permission,
         string taskbug_prefix,
         long start_date_long,
-        long updated_date_long,
-        bool show_project_overview,
+        string updated_date_long,
+        string show_project_overview,
         TaskCount task_count,
         string updated_date_format,
         string bug_defaultview,
@@ -32,6 +32,8 @@ namespace Zoho.Records.Project
         string updated_by,
         string updated_by_id,
         string created_by_id,
+        string project_percent,
+        string start_date,
         List<Task> tasks
     );
 

@@ -46,6 +46,14 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/", "tasks");
             return response;
         }
+        public async Task<T[]> GetProject<T>(string projectId, long? portalId = null)
+        {
+            //GET  /restapi/portal/[PORTALID]/projects/[PROJECTID]/
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/", "projects");
+            return response;
+        }
 
         /// <summary>
         /// GET  /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/subtasks/

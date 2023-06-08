@@ -12,7 +12,8 @@ namespace Zoho.Interfaces
     {
         Task<T[]> GetProjets<T>(long? portalId = null);
         Task<T[]> GetTasks<T>(string projectId, long? portalId = null);
-        Task<T[]> GetSubTasks<T>(string projectId, string taskId, long? portalId = null);
+        Task<T[]> GetProject<T>(string projectId, long? portalId = null);
+        Task<T[]> GetSubTasks<T>(string projectId,string taskId, long? portalId = null);
         Task<T[]> GetTaskAttachments<T>(string projectId, string taskId, long? portalId = null);
         Task<Task> UpdateTask(string projectId, string taskId, object input, long? portalId = null);
         Task<T[]> GetTasksSearch<T>(long projectId, long? portalId,string search);
