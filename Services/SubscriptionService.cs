@@ -45,6 +45,13 @@ namespace Zoho.Services
             return await client.InvokePutAsync(Name, $"customers/{customerId}", input);
         }
 
+        public async Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId)
+        {
+            var client = await _factory.CreateAsync();
+            //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
+            return await client.InvokePutAsync(Name, $"subscriptions/{subscriptionId}", input);
+        }
+
         public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
         {
             var client = await _factory.CreateAsync();
