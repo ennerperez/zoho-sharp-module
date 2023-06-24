@@ -133,7 +133,16 @@ namespace Zoho.Services
             var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/comments/", input, mediaType: string.Empty);
             return response;
         }
-
+        
+        ///GET  /restapi/portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/comments/
+        public async Task<T[]> GetCommentsTask<T>(string taskId,string projectId, long? portalId = null)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/comments/", "comments");
+            return response;
+        }
+        
         /// <summary>
         /// POST /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
         /// </summary>
