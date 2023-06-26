@@ -24,5 +24,7 @@ namespace Zoho.Interfaces
         Task<JObject> UploadAttachmentTask(string projectId, string taskId, long? portalId = null, Dictionary<string, Zoho.Structures.Attachment> attachments = null);
         Task<T[]> GetAttachmentsTask<T>(string projectId, string taskId, long? portalId = null);
         Task<T[]> GetDocumentsTask<T>(string projectId, long? portalId = null);
+
+        Task<T[]> GetCommentsTask<T>(string taskId, string projectId, long? portalId = null);
     }
 }
