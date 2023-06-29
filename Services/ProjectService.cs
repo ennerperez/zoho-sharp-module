@@ -136,10 +136,15 @@ namespace Zoho.Services
         
         public async Task<JObject> CreatedCommentTask(string projectId, string taskId, object input, long? portalId = null)
         {
+            return await CreatedCommentTask<JObject>(projectId,taskId,input);
+        }
+        
+        public async Task<T> CreatedCommentTask<T>(string projectId, string taskId, object input, long? portalId = null)
+        {
             //POST /restapi /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/comments/
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/comments/", input, mediaType: string.Empty);
+            var response = await client.InvokePostAsync<T>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/comments/", input, mediaType: string.Empty);
             return response;
         }
         
