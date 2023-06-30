@@ -28,6 +28,7 @@ namespace Zoho.Enums
         Notes,
         Appointments,
         Activities,
-        Projects
+        Projects,
+        Booking
     }
 }
