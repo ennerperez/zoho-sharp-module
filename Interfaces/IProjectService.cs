@@ -10,7 +10,7 @@ namespace Zoho.Interfaces
     /// </summary>
     public interface IProjectService
     {
-        Task<T[]> GetProjets<T>(long? portalId = null);
+        Task<T[]> GetProjects<T>(long? portalId = null);
         Task<T[]> GetTasks<T>(string projectId, long? portalId = null);
         Task<T[]> GetTaskDetails<T>(string taskId, string projectId, long? portalId = null);
         Task<T[]> GetProject<T>(string projectId, long? portalId = null);

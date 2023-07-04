@@ -27,7 +27,7 @@ namespace Zoho.Services
         /// <param name="portalId"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<T[]> GetProjets<T>(long? portalId = null)
+        public async Task<T[]> GetProjects<T>(long? portalId = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
