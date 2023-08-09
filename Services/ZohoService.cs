@@ -550,10 +550,10 @@ namespace Zoho.Services
                 return processResult.Data;
             }
         }
-        
+
         public async Task<JObject> InvokeDeleteAsync(string module, string url, object input, string subnode = "")
         {
-            return await InvokeDeleteAsync<JObject>(module, url,  subnode);
+            return await InvokeDeleteAsync<JObject>(module, url, subnode);
         }
 
         public async Task<TOutput> InvokeDeleteAsync<TOutput>(string module, string url, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)

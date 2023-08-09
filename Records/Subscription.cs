@@ -27,7 +27,7 @@ namespace Zoho.Records
         DateTime created_time,
         DateTime? updated_time,
         Plan plan,
-        Addon[] addons 
+        Addon[] addons
     );
 }
 #endif
