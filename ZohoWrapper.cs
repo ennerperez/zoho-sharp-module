@@ -1,4 +1,4 @@
-using Zoho.Interfaces;
+﻿using Zoho.Interfaces;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable once CheckNamespace
@@ -21,9 +21,9 @@ namespace Zoho
         public ICampaignService Campaign { get; }
 
         public ISubscriptionService Subscription { get; }
-        
+
         public ICrmService CRM { get; }
-        
+
         public IProjectService Project { get; }
     }
 }

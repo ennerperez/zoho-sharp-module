@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 #if NET6_0_OR_GREATER
 // ReSharper disable NotAccessedPositionalProperty.Global
@@ -34,7 +34,7 @@ namespace Zoho.Records.Project
         string created_by_id,
         List<Task> tasks
     );
-    
+
 };
 
 #endif

@@ -9,7 +9,7 @@ namespace Zoho.Services
     public class BookService : IBookService
     {
         private string Name => Enum.GetName(Enums.Module.Books);
-        
+
         private readonly Factory _factory;
 
         public BookService(Factory factory)

@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace Zoho.Interfaces
@@ -10,10 +10,10 @@ namespace Zoho.Interfaces
     {
         Task<T[]> GetProjets<T>(long? portalId = null);
         Task<T[]> GetTasks<T>(string projectId, long? portalId = null);
-        Task<T[]> GetSubTasks<T>(string projectId,string taskId, long? portalId = null);
+        Task<T[]> GetSubTasks<T>(string projectId, string taskId, long? portalId = null);
         Task<T[]> GetTaskAttachments<T>(string projectId, string taskId, long? portalId = null);
         Task<JObject> UpdateTask(string projectId, string taskId, object input, long? portalId = null);
-        Task<T[]> GetTasksSearch<T>(long projectId, long? portalId,string search);
+        Task<T[]> GetTasksSearch<T>(long projectId, long? portalId, string search);
 
         Task<JObject> CreatedProject(object input, long? portalId = null);
 

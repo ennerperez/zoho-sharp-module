@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Zoho.Models
@@ -9,7 +9,7 @@ namespace Zoho.Models
         public List<T> Data { get; set; }
         [JsonProperty("info")]
         public PageInfo Info { get; set; }
-        
+
     }
     public class PageInfo
     {

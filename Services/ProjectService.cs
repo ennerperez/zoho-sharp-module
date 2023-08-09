@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -39,7 +39,7 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/","tasks");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/", "tasks");
             return response;
         }
 
@@ -56,7 +56,7 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/subtasks/","tasks");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/subtasks/", "tasks");
             return response;
         }
 
@@ -85,7 +85,7 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/",input, mediaType: string.Empty);
+            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/", input, mediaType: string.Empty);
             return response;
         }
 
@@ -97,10 +97,10 @@ namespace Zoho.Services
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            
+
             var encodedToSearch = Uri.EscapeDataString(search);
-            
-            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/search?search_term={encodedToSearch}/","tasks");
+
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/search?search_term={encodedToSearch}/", "tasks");
             return response;
         }
 
@@ -109,7 +109,7 @@ namespace Zoho.Services
             //portal/[PORTALID]/projects/
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/",input, mediaType: string.Empty);
+            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/", input, mediaType: string.Empty);
             return response;
         }
 
@@ -119,11 +119,11 @@ namespace Zoho.Services
         /// <param name="input"></param>
         /// <param name="portalId"></param>
         /// <returns></returns>
-        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId,byte[] input, long? portalId = null)
+        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId, byte[] input, long? portalId = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
-            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/",input, mediaType: string.Empty);
+            var response = await client.InvokePostAsync<JObject>(Name, $"portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments/", input, mediaType: string.Empty);
             return response;
         }
 

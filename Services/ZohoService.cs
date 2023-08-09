@@ -314,7 +314,7 @@ namespace Zoho.Services
             {
                 var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
                 content = new StringContent(data, Encoding.UTF8, mediaType);
-            } 
+            }
             else
             {
                 var props = input.GetType().GetProperties();
@@ -447,14 +447,14 @@ namespace Zoho.Services
             {
                 var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
                 content = new StringContent(data, Encoding.UTF8, mediaType);
-            } 
+            }
             else
             {
                 var props = input.GetType().GetProperties();
                 var values = props.Select(m => new KeyValuePair<string, string>(m.Name, m.GetValue(input)?.ToString()));
                 content = new FormUrlEncodedContent(values);
             }
-            
+
             var retryCount = 0;
             var IsSuccessStatusCode = false;
             ProcessEntity<TOutput> processResult = null;

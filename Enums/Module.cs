@@ -1,4 +1,4 @@
-// ReSharper disable InconsistentNaming
+﻿// ReSharper disable InconsistentNaming
 
 namespace Zoho.Enums
 {
@@ -25,7 +25,7 @@ namespace Zoho.Enums
         Purchase_Orders,
         Invoices,
         Custom,
-        Notes, 
+        Notes,
         Appointments,
         Activities,
         Projects

@@ -11,7 +11,7 @@ namespace Zoho.Services
     public class SubscriptionService : ISubscriptionService
     {
         private string Name => Enum.GetName(Enums.Module.Subscriptions);
-        
+
         private readonly Factory _factory;
 
         public SubscriptionService(Factory factory)

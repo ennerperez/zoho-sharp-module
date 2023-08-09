@@ -8,7 +8,7 @@ namespace Zoho.Models
 {
     public class Response : Response<int>
     {
-        
+
     }
     public class Response<TCode>
     {
@@ -29,7 +29,7 @@ namespace Zoho.Models
 
         [JsonProperty("page_context")]
         public PageContext PageContext { get; set; }
-        
+
         [JsonProperty("details")]
         public ResponseDetails Details { get; set; }
     }

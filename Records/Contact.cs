@@ -1,4 +1,4 @@
-#if NET6_0_OR_GREATER
+﻿#if NET6_0_OR_GREATER
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
@@ -7,8 +7,8 @@ namespace Zoho.Records.Project
 {
 
     public record Contact(
-        string Last_Name, 
-        string First_Name, 
+        string Last_Name,
+        string First_Name,
         string Email
     );
 

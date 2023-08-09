@@ -12,7 +12,7 @@ namespace Zoho.Services
     public class CampaignService : ICampaignService
     {
         private string Name => Enum.GetName(Enums.Module.Campaigns);
-        
+
         private readonly Factory _factory;
 
         public CampaignService(Factory factory)
