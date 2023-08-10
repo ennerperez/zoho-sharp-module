@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
+using Zoho.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
