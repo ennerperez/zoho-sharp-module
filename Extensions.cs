@@ -18,6 +18,7 @@ namespace Zoho
             {
                 case ServiceLifetime.Singleton:
                     services.AddSingleton<IBookService, BookService>().Configure(configureOptions);
+                    services.AddSingleton<IBookingService, BookingService>().Configure(configureOptions);
                     services.AddSingleton<ICampaignService, CampaignService>().Configure(configureOptions);
                     services.AddSingleton<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
                     services.AddSingleton<ICrmService, CrmService>().Configure(configureOptions);
@@ -26,6 +27,7 @@ namespace Zoho
                     break;
                 case ServiceLifetime.Scoped:
                     services.AddScoped<IBookService, BookService>().Configure(configureOptions);
+                    services.AddScoped<IBookingService, BookingService>().Configure(configureOptions);
                     services.AddScoped<ICampaignService, CampaignService>().Configure(configureOptions);
                     services.AddScoped<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
                     services.AddScoped<ICrmService, CrmService>().Configure(configureOptions);
@@ -34,6 +36,7 @@ namespace Zoho
                     break;
                 case ServiceLifetime.Transient:
                     services.AddTransient<IBookService, BookService>().Configure(configureOptions);
+                    services.AddTransient<IBookingService, BookingService>().Configure(configureOptions);
                     services.AddTransient<ICampaignService, CampaignService>().Configure(configureOptions);
                     services.AddTransient<ISubscriptionService, SubscriptionService>().Configure(configureOptions);
                     services.AddTransient<ICrmService, CrmService>().Configure(configureOptions);

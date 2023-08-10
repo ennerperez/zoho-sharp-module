@@ -37,6 +37,16 @@ namespace Zoho.Services
         {
             return await GetRecords<JObject>(module, perPage, fields);
         }
+        
+        public async Task<PageResult<T>> GetRecordsSearch<T>(Enums.Module module, string word)
+        {
+            //GET /{module_api_name}/search?word={{search_word_here}}
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_"," ");
+            
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/search?word={word}");
+            return response;
+        }
 
         public async Task<PageResult<T>> GetRecords<T>(Enums.Module module, int perPage = 3, params string[] fields)
         {

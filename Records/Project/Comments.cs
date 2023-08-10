@@ -9,18 +9,12 @@ using System.Threading.Tasks;
 // ReSharper disable InconsistentNaming
 namespace Zoho.Records.Project
 {
-    public record Task(
+    public record Comments(
         string id,
-        string name,
-        DateTime start_date_format,
-        DateTime end_date_format,
-        CustomField[] custom_fields,
-        Status status,
-        bool completed,
-        string priority,
-        string description,
-        bool subtasks,
-        Zoho.Records.Project.Attachtment[] attachments
+        string content,
+        string added_via,
+        string id_string,
+        string created_time
     );
 }
 #endif
