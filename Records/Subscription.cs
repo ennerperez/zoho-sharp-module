@@ -1,6 +1,5 @@
 ﻿#if NET6_0_OR_GREATER
 using System;
-using System.Collections.Generic;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
