@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Zoho.Interfaces;
 using Zoho.Services;
 
 // ReSharper disable once CheckNamespace

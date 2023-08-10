@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Interfaces;
@@ -116,8 +115,10 @@ namespace Zoho.Services
         /// <summary>
         /// POST /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
         /// </summary>
+        /// <param name="taskId"></param>
         /// <param name="input"></param>
         /// <param name="portalId"></param>
+        /// <param name="projectId"></param>
         /// <returns></returns>
         public async Task<JObject> UploadAttachmentTask(string projectId, string taskId, byte[] input, long? portalId = null)
         {

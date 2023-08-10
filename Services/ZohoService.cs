@@ -550,5 +550,62 @@ namespace Zoho.Services
                 return processResult.Data;
             }
         }
+
+        public async Task<JObject> InvokeDeleteAsync(string module, string url, object input, string subnode = "")
+        {
+            return await InvokeDeleteAsync<JObject>(module, url, subnode);
+        }
+
+        public async Task<TOutput> InvokeDeleteAsync<TOutput>(string module, string url, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)
+        {
+            if (!_options.Modules[module].Enabled)
+            {
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+            }
+
+            // Sanity patch for base URL to end with /
+            var apiBaseUrl = _options.Modules[module].Url;
+            if (!apiBaseUrl.EndsWith("/"))
+            {
+                apiBaseUrl = apiBaseUrl + "/";
+            }
+
+            url = $"{apiBaseUrl}{url}";
+
+            HttpContent content = null;
+
+            var retryCount = 0;
+            var IsSuccessStatusCode = false;
+            ProcessEntity<TOutput> processResult = null;
+            while (!IsSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.PostAsync(url, content);
+                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await GetTokenAsync(true);
+                }
+                else
+                {
+                    processResult = await ProcessResponse<TOutput>(response, subnode);
+                }
+
+                retryCount++;
+            }
+
+            if (processResult == null)
+            {
+                throw new InvalidOperationException("API call did not completed successfully");
+            }
+            else if (processResult.Error != null)
+            {
+                throw processResult.Error;
+            }
+            else
+            {
+                return processResult.Data;
+            }
+        }
     }
 }

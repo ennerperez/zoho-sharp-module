@@ -10,6 +10,7 @@ namespace Zoho.Records
         string name,
         string addon_code,
         string addon_id,
+        int quantity,
         string description,
         string status,
         string unit_name,

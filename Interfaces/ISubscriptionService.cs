@@ -33,7 +33,13 @@ namespace Zoho.Interfaces
 
         Task<JObject> UpdateCustomerAsync(object input, string customerId);
 
+        Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId);
+
         Task<List<JObject>> GetSubscriptions();
+
+        Task<T> GetSubscriptionsRetrieve<T>(string subscriptionId);
         Task<List<T>> GetSubscriptions<T>();
+
+        Task<JObject> CancelSubscriptionAsync<T>(string subscriptionId);
     }
 }
