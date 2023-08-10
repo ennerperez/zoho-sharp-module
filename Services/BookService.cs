@@ -29,5 +29,11 @@ namespace Zoho.Services
             return await client.InvokePostAsync(Name, "invoices", input);
         }
 
+        public async Task<string> GetOption(string key)
+        {
+            var client = await _factory.CreateAsync();
+            return client.GetOption("Books", key);
+        }
+
     }
 }

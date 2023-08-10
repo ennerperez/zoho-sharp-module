@@ -219,5 +219,11 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/documents/");
             return response;
         }
+
+        public async Task<string> GetOption(string key)
+        {
+            var client = await _factory.CreateAsync();
+            return client.GetOption(Name, key);
+        }
     }
 }

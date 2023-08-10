@@ -32,5 +32,11 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T>(Name, $"getappointment?booking_id={bookingId}","response");
             return response;
         }
+
+        public async Task<string> GetOption(string key)
+        {
+            var client = await _factory.CreateAsync();
+            return client.GetOption(Name, key);
+        }
     }
 }

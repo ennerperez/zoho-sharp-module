@@ -69,5 +69,11 @@ namespace Zoho.Services
             return response.Items.FirstOrDefault(m => m.Value<string>("contact_email")?.ToLower().Trim() == email.ToLower().Trim());
         }
 
+        public async Task<string> GetOption(string key)
+        {
+            var client = await _factory.CreateAsync();
+            return client.GetOption(Name, key);
+        }
+
     }
 }

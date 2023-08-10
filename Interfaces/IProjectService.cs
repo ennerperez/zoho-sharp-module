@@ -8,7 +8,7 @@ namespace Zoho.Interfaces
     /// <summary>
     ///     https://projectsapi.zoho.com/restapi/
     /// </summary>
-    public interface IProjectService
+    public interface IProjectService : IZohoService
     {
         Task<T[]> GetProjects<T>(long? portalId = null);
         Task<T[]> GetTasks<T>(string projectId, long? portalId = null);
