@@ -8,7 +8,6 @@ using System;
 namespace Zoho.Records
 {
     public record Subscription(
-        // customer
         string customer_id,
         string created_by,
         string customer_name,
@@ -20,11 +19,14 @@ namespace Zoho.Records
         DateTime? next_billing_at,
         DateTime? last_billing_at,
         string plan_code,
+        string plan_name,
         string subscription_id,
         string subscription_number,
         DateTime activated_at,
         DateTime created_time,
-        DateTime? updated_time
+        DateTime? updated_time,
+        Plan plan,
+        Addon[] addons
     );
 }
 #endif

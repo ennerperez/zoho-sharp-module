@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Zoho.Interfaces;
 using Newtonsoft.Json.Linq;
+using Zoho.Interfaces;
 using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
@@ -11,6 +11,8 @@ namespace Zoho.Services
 {
     public class CampaignService : ICampaignService
     {
+        private string Name => Enum.GetName(Enums.Module.Campaigns);
+
         private readonly Factory _factory;
 
         public CampaignService(Factory factory)
@@ -26,7 +28,7 @@ namespace Zoho.Services
             }
 
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync("Campaigns", "addlistsubscribersinbulk", input);
+            return await client.InvokePostAsync(Name, "addlistsubscribersinbulk", input);
         }
 
         public async Task<List<JObject>> GetListSubscribersAsync(string designation)
@@ -38,9 +40,9 @@ namespace Zoho.Services
 
             var client = await _factory.CreateAsync();
 
-            var listKey = client.GetOption("Campaigns", designation);
+            var listKey = client.GetOption(Name, designation);
             var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active";
-            var response = await client.InvokeGetAsync<List<JObject>>("Campaigns", endpoint);
+            var response = await client.InvokeGetAsync<List<JObject>>(Name, endpoint);
 
             return response;
         }
@@ -59,10 +61,10 @@ namespace Zoho.Services
 
             var client = await _factory.CreateAsync();
 
-            var listKey = client.GetOption("Campaigns", designation);
+            var listKey = client.GetOption(Name, designation);
             var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active";
-            
-            var response = await client.InvokeGetAsync<ListOfDetails<JObject>>("Campaigns", endpoint);
+
+            var response = await client.InvokeGetAsync<ListOfDetails<JObject>>(Name, endpoint);
 
             return response.Items.FirstOrDefault(m => m.Value<string>("contact_email")?.ToLower().Trim() == email.ToLower().Trim());
         }
@@ -70,7 +72,8 @@ namespace Zoho.Services
         public async Task<string> GetOption(string key)
         {
             var client = await _factory.CreateAsync();
-            return client.GetOption("Campaigns", key);
+            return client.GetOption(Name, key);
         }
+
     }
 }

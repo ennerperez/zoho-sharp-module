@@ -5,8 +5,10 @@
 // ReSharper disable InconsistentNaming
 namespace Zoho.Records
 {
-    public record Brackets(
-        decimal price
+    public record BugCount(
+        int closed,
+        int open
     );
 }
+
 #endif

@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿// ReSharper disable once CheckNamespace
 
-// ReSharper disable once CheckNamespace
+using System.Threading.Tasks;
 namespace Zoho.Interfaces
 {
     public interface IZohoService

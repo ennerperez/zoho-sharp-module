@@ -3,10 +3,14 @@
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable InconsistentNaming
-namespace Zoho.Records
+namespace Zoho.Records.Project
 {
-    public record Brackets(
-        decimal price
+
+    public record Contact(
+        string Last_Name,
+        string First_Name,
+        string Email
     );
+
 }
 #endif

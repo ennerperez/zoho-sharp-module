@@ -4,6 +4,7 @@ using System;
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable InconsistentNaming
 namespace Zoho.Records
 {
     public record Plan(
