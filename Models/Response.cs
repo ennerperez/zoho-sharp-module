@@ -46,7 +46,7 @@ namespace Zoho.Models
         public IEnumerable<T> Items { get; set; }
 
         [JsonProperty("requestdetails")]
-        public RequestDetails Details { get; set; }
+        public new RequestDetails Details { get; set; }
     }
 
     public class RequestDetails

@@ -204,12 +204,10 @@ namespace Zoho.Services
             return response;
         }
 
-        public async Task<JObject> CancelSusbscriptionAsync<T>(string susbscriptionId)
+        public async Task<JObject> CancelSubscriptionAsync<T>(string subscriptionId)
         {
-            var input = "test";
-            //--url https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200/cancel
             var client = await _factory.CreateAsync();
-            return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{susbscriptionId}/cancel");
+            return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{subscriptionId}/cancel");
         }
 
     }
