@@ -25,10 +25,12 @@ namespace Zoho.Services
             return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
-        public async Task<JObject> CreateSubscriptionAsync(object input)
+        public async Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
+            if (hostedpages)
+                return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
+            return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
         public async Task<JObject> CreateCustomerAsync(object input)
@@ -215,6 +217,5 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             return client.GetOption(Name, key);
         }
-
     }
 }

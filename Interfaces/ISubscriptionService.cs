@@ -12,8 +12,8 @@ namespace Zoho.Interfaces
     {
         Task<JObject> AddChargeAsync(string subscriptionId, JObject input);
         Task<bool> SetCardCollect(string subscriptionId, JObject input);
-        Task<JObject> CreateAsync(object input);
-        Task<JObject> CreateSubscriptionAsync(object input);
+
+        Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false);
         Task<JObject> CreateRenewalAsync(string subscriptionId, object input);
         Task<JObject> RequestPaymentMethod(string customerId);
         Task<List<JObject>> GetCards(string customerId);
