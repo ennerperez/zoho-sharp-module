@@ -28,6 +28,7 @@ namespace Zoho.Services
         public async Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
+
             if (hostedpages)
                 return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
             return await client.InvokePostAsync(Name, "subscriptions", input);
@@ -47,10 +48,13 @@ namespace Zoho.Services
             return await client.InvokePutAsync(Name, $"customers/{customerId}", input);
         }
 
-        public async Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId)
+        public async Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
+            if (hostedpages)
+                return await client.InvokePostAsync(Name, "hostedpages/updatesubscription", input);
+            
             return await client.InvokePutAsync(Name, $"subscriptions/{subscriptionId}", input);
         }
 
