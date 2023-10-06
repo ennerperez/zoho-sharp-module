@@ -214,15 +214,14 @@ namespace Zoho.Services
             return response.ToList();
         }
 
-        public async Task<T> GetSubscriptionsRetrieve<T>(string subscriptionId)
+        public async Task<T> GetSubscription<T>(string subscriptionId)
         {
-            //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
             var client = await _factory.CreateAsync();
             var response = await client.InvokeGetAsync<T>("Subscriptions", $"subscriptions/{subscriptionId}", "subscription");
             return response;
         }
 
-        public async Task<JObject> CancelSubscriptionAsync<T>(string subscriptionId)
+        public async Task<JObject> CancelSubscription<T>(string subscriptionId)
         {
             var client = await _factory.CreateAsync();
             return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{subscriptionId}/cancel");
