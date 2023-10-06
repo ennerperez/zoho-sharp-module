@@ -341,7 +341,7 @@ namespace Zoho.Services
                         (content as MultipartFormDataContent).Add(new StreamContent(File.OpenRead(tempFile)), input.ToString(), item.Key);
                         if (item.Value.Details == null)
                             continue;
-    
+
                         var jsonDetailValue = JsonConvert.SerializeObject(item.Value.Details, Formatting.None);
                         (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
                         //(content as MultipartFormDataContent).Add(new StringContent("{\"location_details\":{\"folder_id\":\"-1\",\"project_id\":\"1947441000000114005\"},\"storage_type\":\"workdrive\"}"), "attachment_details");
@@ -390,7 +390,8 @@ namespace Zoho.Services
                 {
                     processResult = await ProcessResponse<TOutput>(response, subnode);
                     IsSuccessStatusCode = true;
-                }else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await GetTokenAsync(true);
                 }
@@ -421,7 +422,7 @@ namespace Zoho.Services
             HttpContent content = null;
             var isAuthorized2 = false;
             var attemptCount2 = 0;
-            HttpResponseMessage response = null;    
+            HttpResponseMessage response = null;
             ProcessEntity<TOutput> processResultFile2 = null;
             while (!isAuthorized2 && attemptCount2 <= 3)
             {
@@ -460,7 +461,7 @@ namespace Zoho.Services
 
             throw processResultFile2.Error;
         }
-        
+
         public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input, string fileName, string subnode = "")
         {
             if (input == null)

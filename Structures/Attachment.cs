@@ -1,4 +1,4 @@
-namespace Zoho.Structures
+﻿namespace Zoho.Structures
 {
     public struct Attachment
     {
