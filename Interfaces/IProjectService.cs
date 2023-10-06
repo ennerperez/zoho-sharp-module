@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Task = Zoho.Records.Project.Task;
@@ -14,10 +14,10 @@ namespace Zoho.Interfaces
         Task<T[]> GetTasks<T>(string projectId, long? portalId = null);
         Task<T[]> GetTaskDetails<T>(string taskId, string projectId, long? portalId = null);
         Task<T[]> GetProject<T>(string projectId, long? portalId = null);
-        Task<T[]> GetSubTasks<T>(string projectId,string taskId, long? portalId = null);
+        Task<T[]> GetSubTasks<T>(string projectId, string taskId, long? portalId = null);
         Task<T[]> GetTaskAttachments<T>(string projectId, string taskId, long? portalId = null);
         Task<Task> UpdateTask(string projectId, string taskId, object input, long? portalId = null);
-        Task<T[]> GetTasksSearch<T>(long projectId, long? portalId,string search);
+        Task<T[]> GetTasksSearch<T>(long projectId, long? portalId, string search);
 
         Task<JObject> CreatedProject(object input, long? portalId = null);
         Task<JObject> CreatedCommentTask(string projectId, string taskId, object input, long? portalId = null);

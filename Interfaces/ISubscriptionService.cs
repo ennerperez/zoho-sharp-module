@@ -12,8 +12,8 @@ namespace Zoho.Interfaces
     {
         Task<JObject> AddChargeAsync(string subscriptionId, JObject input);
         Task<bool> SetCardCollect(string subscriptionId, JObject input);
-        Task<JObject> CreateAsync(object input);
-        Task<JObject> CreateSubscriptionAsync(object input);
+
+        Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false);
         Task<JObject> CreateRenewalAsync(string subscriptionId, object input);
         Task<JObject> RequestPaymentMethod(string customerId);
         Task<List<JObject>> GetCards(string customerId);
@@ -33,12 +33,13 @@ namespace Zoho.Interfaces
 
         Task<JObject> UpdateCustomerAsync(object input, string customerId);
 
-        Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId);
+        Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId, bool hostedpages = false);
 
         Task<List<JObject>> GetSubscriptions();
 
         Task<T> GetSubscriptionsRetrieve<T>(string subscriptionId);
         Task<List<T>> GetSubscriptions<T>();
+        Task<List<T>> GetSubscriptionInvoice<T>();
 
         Task<JObject> CancelSubscriptionAsync<T>(string subscriptionId);
     }

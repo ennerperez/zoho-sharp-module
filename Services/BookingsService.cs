@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Zoho.Interfaces;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using Zoho.Models;
+using Zoho.Interfaces;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -13,7 +10,7 @@ namespace Zoho.Services
     public class BookingService : IBookingService
     {
         private string Name => Enum.GetName(Enums.Module.Booking);
-        
+
         private readonly Factory _factory;
 
         public BookingService(Factory factory)
@@ -24,12 +21,12 @@ namespace Zoho.Services
                 ContractResolver = new DefaultContractResolver()
             };
         }
-        
+
         public async Task<T> GetBooking<T>(string bookingId)
         {
             //GET 'https://www.zohoapis.com/bookings/v1/json/getappointment?booking_id=#AN-00014'
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T>(Name, $"getappointment?booking_id={bookingId}","response");
+            var response = await client.InvokeGetAsync<T>(Name, $"getappointment?booking_id={bookingId}", "response");
             return response;
         }
 

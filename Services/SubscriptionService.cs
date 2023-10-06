@@ -25,10 +25,13 @@ namespace Zoho.Services
             return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
-        public async Task<JObject> CreateSubscriptionAsync(object input)
+        public async Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
+
+            if (hostedpages)
+                return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
+            return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
         public async Task<JObject> CreateCustomerAsync(object input)
@@ -45,10 +48,13 @@ namespace Zoho.Services
             return await client.InvokePutAsync(Name, $"customers/{customerId}", input);
         }
 
-        public async Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId)
+        public async Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
+            if (hostedpages)
+                return await client.InvokePostAsync(Name, "hostedpages/updatesubscription", input);
+            
             return await client.InvokePutAsync(Name, $"subscriptions/{subscriptionId}", input);
         }
 
@@ -195,6 +201,18 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>(Name, "subscriptions", "subscriptions");
             return response.ToList();
         }
+        
+        public async Task<List<JObject>> GetSubscriptionInvoice()
+        {
+            return await GetSubscriptionInvoice<JObject>();
+        }
+
+        public async Task<List<T>> GetSubscriptionInvoice<T>()
+        {
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeGetAsync<T[]>(Name, "invoices", "invoices");
+            return response.ToList();
+        }
 
         public async Task<T> GetSubscriptionsRetrieve<T>(string subscriptionId)
         {
@@ -215,6 +233,5 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             return client.GetOption(Name, key);
         }
-
     }
 }
