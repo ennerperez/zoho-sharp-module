@@ -24,7 +24,7 @@ namespace Zoho.Records.Project
         bool is_sprints_project,
         string owner_name,
         long created_date_long,
-        Zoho.Records.Project.CustomFieldProject[] custom_fields,
+        CustomFieldProject[] custom_fields,
         string created_by,
         string created_date_format,
         long profile_id,

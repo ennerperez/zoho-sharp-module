@@ -159,35 +159,33 @@ namespace Zoho.Services
         /// POST /portal/[PORTALID]/projects/[PROJECTID]/tasks/[TASKID]/attachments/
         /// </summary>
         /// <param name="taskId"></param>
-        /// <param name="input"></param>
         /// <param name="portalId"></param>
         /// <param name="projectId"></param>
         /// <param name="attachments"></param>
         /// <returns></returns>
-        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId, long? portalId = null, Dictionary<string, Zoho.Structures.Attachment> attachments = null)
+        public async Task<JObject> UploadAttachmentTask(string projectId, string taskId, long? portalId = null, Dictionary<string, Structures.Attachment> attachments = null)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
             var response1 = new List<JObject[]>();
-            foreach (var item in attachments)
+            if (attachments != null)
             {
-                var attachmentsNew = new Dictionary<string, Zoho.Structures.Attachment>();
-                attachmentsNew.Add(item.Key, item.Value);
-                var responseAux = await client.InvokePostAsync<JObject[]>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/attachments", "upload_file", attachments: attachmentsNew, subnode: "attachment");
-                response1.Add(responseAux);
+                foreach (var item in attachments)
+                {
+                    var attachmentsNew = new Dictionary<string, Structures.Attachment>();
+                    attachmentsNew.Add(item.Key, item.Value);
+                    var responseAux = await client.InvokePostAsync<JObject[]>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/attachments", "upload_file", attachments: attachmentsNew, subnode: "attachment");
+                    response1.Add(responseAux);
+                }
             }
-            if (response1 != null)
-            {
-                //var attachment_ids = response1.Select(m => m["attachment_id"].Value<string>()).ToArray();
-                var attachment_ids = response1.SelectMany(m => m.Select(n => n["attachment_id"].Value<string>())).ToArray();
-                //"https://projects.zoho.com/api/v3/portal/777023207/projects/1947441000000114005/tasks/1947441000000115008/attachments"
-                //var response2 = await client.InvokePostAsync<JObject>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments", attachment_ids, mediaType: "MultipartFormData");
+            //var attachment_ids = response1.Select(m => m["attachment_id"].Value<string>()).ToArray();
+            var attachmentIds = response1.SelectMany(m => m.Select(n => n["attachment_id"].Value<string>())).ToArray();
+            //"https://projects.zoho.com/api/v3/portal/777023207/projects/1947441000000114005/tasks/1947441000000115008/attachments"
+            //var response2 = await client.InvokePostAsync<JObject>(Name, $"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments", attachment_ids, mediaType: "MultipartFormData");
 
-                var response2 = await client.InvokePostZohoPdfAsync<JObject>($"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments", attachment_ids);
-                return response2;
-            }
+            var response2 = await client.InvokePostZohoPdfAsync<JObject>($"https://projects.zoho.com/api/v3/portal/{portalId}/projects/{projectId}/tasks/{taskId}/attachments", attachmentIds);
+            return response2;
 
-            return null;
         }
 
         /// <summary>

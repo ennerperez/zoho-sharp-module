@@ -288,7 +288,7 @@ namespace Zoho.Services
             return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Zoho.Structures.Attachment> attachments = null)
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Structures.Attachment> attachments = null)
         {
             if (input == null && attachments == null)
             {

@@ -18,7 +18,7 @@ namespace Zoho.Records.Project
         string priority,
         string description,
         bool subtasks,
-        Zoho.Records.Project.Attachtment[] attachments
+        Attachtment[] attachments
     );
 }
 #endif
