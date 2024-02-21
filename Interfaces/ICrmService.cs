@@ -18,6 +18,7 @@ namespace Zoho.Interfaces
         Task<PageResult<T>> GetAttachments<T>(Enums.Module module, string recordId, params string[] fields);
 
         Task<Response<string>[]> CreateRecordAsync(Enums.Module module, object input);
+        Task<Response<string>[]> UpdateRecordAsync(Enums.Module module, string recordId, object input);
 
     }
 }

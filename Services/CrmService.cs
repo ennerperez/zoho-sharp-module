@@ -58,13 +58,21 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}?fields={string.Join(",", fields)}&per_page={perPage}");
             return response;
         }
-
+        
         public async Task<Response<string>[]> CreateRecordAsync(Enums.Module module, object input)
         {
             var client = await _factory.CreateAsync();
             //{api-domain}/crm/{version}/{module_api_name}
             var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
             return await client.InvokePostAsync<Response<string>[]>(Name, $"{moduleApiName}", input, "data");
+        }
+        
+        public async Task<Response<string>[]> UpdateRecordAsync(Enums.Module module, string recordId, object input)
+        {
+            var client = await _factory.CreateAsync();
+            //{api-domain}/crm/{version}/{module_api_name}
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
+            return await client.InvokePutAsync<Response<string>[]>(Name, $"{moduleApiName}/{recordId}", input, "data");
         }
 
         public async Task<PageResult<JObject>> GetAttachments(Enums.Module module, string recordId, params string[] fields)
