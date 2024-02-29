@@ -663,7 +663,7 @@ namespace Zoho.Services
             }
         }
         
-        public async Task<byte[]> InvokeGetImageAsync(string module, string url)
+        public async Task<Dictionary<string, byte[]>> InvokeGetImageAsync(string module, string url)
         {
             if (!_options.Modules[module].Enabled)
             {
@@ -684,7 +684,8 @@ namespace Zoho.Services
             var retryCount = 0;
             var isSuccessStatusCode = false;
             byte[] imageData = null;
-
+            var typeImage = "";
+            var nameImage = "";
             while (!isSuccessStatusCode && retryCount < 3)
             {
                 SetHttpClient();
@@ -700,6 +701,7 @@ namespace Zoho.Services
                     try
                     {
                         // Leer datos binarios directamente
+                        nameImage = response.Content.Headers.ContentDisposition?.FileNameStar;
                         imageData = await response.Content.ReadAsByteArrayAsync();
                     }
                     catch (Exception ex)
@@ -722,7 +724,12 @@ namespace Zoho.Services
                 throw new InvalidOperationException("API call did not complete successfully");
             }
 
-            return imageData;
+            var result = new Dictionary<string, byte[]>
+            {
+                { nameImage??"", imageData }
+            };
+
+            return result;
         }
 
         public async Task<JObject> InvokeDeleteAsync(string module, string url, object input, string subnode = "")

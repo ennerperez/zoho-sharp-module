@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -99,7 +102,7 @@ namespace Zoho.Services
             var response = await client.InvokeDeleteAsync<PageResult<T>>(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}", null, "Data");
             return response;
         }
-        public async Task<byte[]> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId)
+        public async Task<Dictionary<string, byte[]>> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId)
         {
             //{dominio-api}/crm/{versión}/{module_api_name}/{record_ID}/actions/download_fields_attachment   ?fields_attachment_id=554023000001736007
             //"https://www.zohoapis.com/crm/v6/Accounts/100023009/Attachments/100013547"
@@ -108,9 +111,19 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             //if (fields == null || !fields.Any()) fields = new[] { "id", "Owner", "File_Name", "Created_Time", "Parent_Id" };
             //var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/{recordId}/download_fields_attachment?fields={string.Join(",", fields)}");
-            var response = await client.InvokeGetImageAsync(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}");
+            var data = await client.InvokeGetImageAsync(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}");
             //var response = $"https://www.zohoapis.com/crm/v6/{moduleApiName}/{accountId}/Attachments/{recordId}";
-            return response;
+            try
+            {
+                
+                return data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al escribir en el archivo: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<string> GetOption(string key)
