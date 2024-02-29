@@ -662,6 +662,68 @@ namespace Zoho.Services
                 return processResult.Data;
             }
         }
+        
+        public async Task<byte[]> InvokeGetImageAsync(string module, string url)
+        {
+            if (!_options.Modules[module].Enabled)
+            {
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+            }
+
+            if (!url.StartsWith("http"))
+            {
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
+
+                url = $"{apiBaseUrl}{url}";
+            }
+
+            var retryCount = 0;
+            var isSuccessStatusCode = false;
+            byte[] imageData = null;
+
+            while (!isSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.GetAsync(url);
+                isSuccessStatusCode = response.IsSuccessStatusCode;
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await GetTokenAsync(true);
+                }
+                else
+                {
+                    try
+                    {
+                        // Leer datos binarios directamente
+                        imageData = await response.Content.ReadAsByteArrayAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error reading image data: {ex.Message}");
+                    }
+
+                    if (imageData == null || imageData.Length == 0)
+                    {
+                        isSuccessStatusCode = false;
+                        await GetTokenAsync(true);
+                    }
+                }
+
+                retryCount++;
+            }
+
+            if (imageData == null)
+            {
+                throw new InvalidOperationException("API call did not complete successfully");
+            }
+
+            return imageData;
+        }
 
         public async Task<JObject> InvokeDeleteAsync(string module, string url, object input, string subnode = "")
         {
@@ -692,7 +754,7 @@ namespace Zoho.Services
             while (!IsSuccessStatusCode && retryCount < 3)
             {
                 SetHttpClient();
-                var response = await _httpClient.PostAsync(url, content);
+                var response = await _httpClient.DeleteAsync(url);
                 IsSuccessStatusCode = response.IsSuccessStatusCode;
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {

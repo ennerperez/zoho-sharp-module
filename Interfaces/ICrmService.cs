@@ -20,5 +20,8 @@ namespace Zoho.Interfaces
         Task<Response<string>[]> CreateRecordAsync(Enums.Module module, object input);
         Task<Response<string>[]> UpdateRecordAsync(Enums.Module module, string recordId, object input);
 
+        Task<byte[]> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId);
+
+        Task<PageResult<T>> DeleteAttachment<T>(Enums.Module module, string accountId, string recordId);
     }
 }

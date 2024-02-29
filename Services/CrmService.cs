@@ -90,6 +90,28 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/{recordId}/Attachments?fields={string.Join(",", fields)}");
             return response;
         }
+        public async Task<PageResult<T>> DeleteAttachment<T>(Enums.Module module, string accountId, string recordId)
+        {
+            //{api-domain}/crm/{version}/{module_api_name}/{record_id}/Attachments/{attachment_id}
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
+
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeDeleteAsync<PageResult<T>>(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}", null, "Data");
+            return response;
+        }
+        public async Task<byte[]> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId)
+        {
+            //{dominio-api}/crm/{versión}/{module_api_name}/{record_ID}/actions/download_fields_attachment   ?fields_attachment_id=554023000001736007
+            //"https://www.zohoapis.com/crm/v6/Accounts/100023009/Attachments/100013547"
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
+
+            var client = await _factory.CreateAsync();
+            //if (fields == null || !fields.Any()) fields = new[] { "id", "Owner", "File_Name", "Created_Time", "Parent_Id" };
+            //var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/{recordId}/download_fields_attachment?fields={string.Join(",", fields)}");
+            var response = await client.InvokeGetImageAsync(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}");
+            //var response = $"https://www.zohoapis.com/crm/v6/{moduleApiName}/{accountId}/Attachments/{recordId}";
+            return response;
+        }
 
         public async Task<string> GetOption(string key)
         {
