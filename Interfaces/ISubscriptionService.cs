@@ -29,6 +29,8 @@ namespace Zoho.Interfaces
         Task<List<JObject>> GetCustomers();
         Task<List<T>> GetCustomers<T>();
 
+        Task<IEnumerable<T>> GetCustomersByEmail<T>(string email);
+
         Task<JObject> CreateCustomerAsync(object input);
 
         Task<JObject> UpdateCustomerAsync(object input, string customerId);

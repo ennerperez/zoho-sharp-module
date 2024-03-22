@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Interfaces;
+using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -145,6 +146,16 @@ namespace Zoho.Services
         {
             return await GetCustomers<JObject>();
         }
+        
+        public async Task<IEnumerable<T>> GetCustomersByEmail<T>(string email)
+        {
+            //GET https://www.zohoapis.com/billing/v1/customers?email=edgar300@grr.la
+            var client = await _factory.CreateAsync();
+            //https://subscriptions.zoho.com/api/v1/customers
+            var response = await client.InvokeGetAsync<IEnumerable<T>>(Name, $"customers?email={email}", "customers");
+            return response;
+        }
+
 
         public async Task<List<T>> GetCustomers<T>()
         {
