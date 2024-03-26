@@ -13,7 +13,7 @@
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0' AND ('$(ManagePackageVersionsCentrally)' == '' OR '$(ManagePackageVersionsCentrally)' == 'false')">
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2"/>
   </ItemGroup>
   <ItemGroup Condition="'$(ManagePackageVersionsCentrally)' == 'true'">
     <PackageReference Include="Newtonsoft.Json"/>
