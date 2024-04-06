@@ -13,6 +13,7 @@ namespace Zoho
         }
 
         public string Url { get; set; }
+        public string UrlCustomer { get; set; }
 
         public List<string> Scopes { get; set; }
         public Dictionary<string, string> Keys { get; set; }

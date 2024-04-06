@@ -99,7 +99,7 @@ namespace Zoho.Services
             var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
 
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeDeleteAsync<PageResult<T>>(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}", null, "Data");
+            var response = await client.InvokeDeleteAsync<PageResult<T>>(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}", "Data", true);
             return response;
         }
         public async Task<Dictionary<string, byte[]>> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId)
