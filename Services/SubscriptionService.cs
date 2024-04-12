@@ -46,7 +46,7 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             //https://subscriptions.zoho.com/api/v1/customers
             //https://www.zohoapis.com/billing/v1/customers
-            return await client.InvokeDeleteAsync<JObject>(Name, $"customers/{id}","",true,null);
+            return await client.InvokeDeleteAsync<JObject>(Name, $"customers/{id}");
         }
 
         public async Task<JObject> UpdateCustomerAsync(object input, string customerId)

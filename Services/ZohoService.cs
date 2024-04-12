@@ -737,7 +737,7 @@ namespace Zoho.Services
             return await InvokeDeleteAsync<JObject>(module, url, subnode);
         }
 
-        public async Task<TOutput> InvokeDeleteAsync<TOutput>(string module, string url, string subnode = "", bool customer = false, string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)
+        public async Task<TOutput> InvokeDeleteAsync<TOutput>(string module, string url, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json)
         {
             if (!_options.Modules[module].Enabled)
             {
@@ -747,11 +747,6 @@ namespace Zoho.Services
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
 
-            if (customer)
-            {
-                apiBaseUrl = _options.Modules[module].UrlCustomer;
-            }
-            
             if (!apiBaseUrl.EndsWith("/"))
             {
                 apiBaseUrl = apiBaseUrl + "/";
