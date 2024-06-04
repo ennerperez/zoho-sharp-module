@@ -38,13 +38,13 @@ namespace Zoho.Services
         public async Task<JObject> CreateCustomerAsync(object input)
         {
             var client = await _factory.CreateAsync();
-            //https://subscriptions.zoho.com/api/v1/customers
+            //https://www.zohoapis.com/billing/v1/customers
             return await client.InvokePostAsync(Name, "customers", input);
         }
         public async Task<JObject> DeleteCustomerAsync(string id)
         {
             var client = await _factory.CreateAsync();
-            //https://subscriptions.zoho.com/api/v1/customers
+            //https://www.zohoapis.com/billing/v1/customers
             //https://www.zohoapis.com/billing/v1/customers
             return await client.InvokeDeleteAsync<JObject>(Name, $"customers/{id}");
         }
@@ -52,7 +52,7 @@ namespace Zoho.Services
         public async Task<JObject> UpdateCustomerAsync(object input, string customerId)
         {
             var client = await _factory.CreateAsync();
-            //https://subscriptions.zoho.com/api/v1/customers
+            //https://www.zohoapis.com/billing/v1/customers
             return await client.InvokePutAsync(Name, $"customers/{customerId}", input);
         }
 
@@ -158,7 +158,7 @@ namespace Zoho.Services
         {
             //GET https://www.zohoapis.com/billing/v1/customers?email=edgar300@grr.la
             var client = await _factory.CreateAsync();
-            //https://subscriptions.zoho.com/api/v1/customers
+            //https://www.zohoapis.com/billing/v1/customers
             var response = await client.InvokeGetAsync<IEnumerable<T>>(Name, $"customers?email={email}", "customers");
             return response;
         }
@@ -167,7 +167,7 @@ namespace Zoho.Services
         public async Task<List<T>> GetCustomers<T>()
         {
             var client = await _factory.CreateAsync();
-            //https://subscriptions.zoho.com/api/v1/customers
+            //https://www.zohoapis.com/billing/v1/customers
             var response = await client.InvokeGetAsync<T[]>(Name, "customers", "customers");
             return response.ToList();
         }

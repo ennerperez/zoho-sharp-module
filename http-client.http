@@ -185,7 +185,7 @@ Authorization: Zoho-oauthtoken {{access_token}}
 ### Step 5: Calling An API (Get Hostedpages)
 ### [1] https://www.zoho.com/subscriptions/api/v1/hosted-pages/#create-a-subscription
 ### [2] https://www.zoho.com/subscriptions/api/v1/customers/#create-a-customer (Ref: Customer Model)
-POST https://subscriptions.zoho.com/api/v1/hostedpages/newsubscription
+POST https://www.zohoapis.com/billing/v1/hostedpages/newsubscription
 X-com-zoho-subscriptions-organizationid: {{organizationid}}
 Authorization: Zoho-oauthtoken {{access_token}}
 Content-Type: application/json;charset=UTF-8
