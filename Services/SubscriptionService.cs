@@ -26,7 +26,7 @@ namespace Zoho.Services
             return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
-        public async Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false)
+        public async Task<JObject> CreateSubscription(object input, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
 
@@ -35,13 +35,13 @@ namespace Zoho.Services
             return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
-        public async Task<JObject> CreateCustomerAsync(object input)
+        public async Task<JObject> CreateCustomer(object input)
         {
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/billing/v1/customers
             return await client.InvokePostAsync(Name, "customers", input);
         }
-        public async Task<JObject> DeleteCustomerAsync(string id)
+        public async Task<JObject> DeleteCustomer(string id)
         {
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/billing/v1/customers
@@ -49,14 +49,14 @@ namespace Zoho.Services
             return await client.InvokeDeleteAsync<JObject>(Name, $"customers/{id}");
         }
 
-        public async Task<JObject> UpdateCustomerAsync(object input, string customerId)
+        public async Task<JObject> UpdateCustomer(object input, string customerId)
         {
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/billing/v1/customers
             return await client.InvokePutAsync(Name, $"customers/{customerId}", input);
         }
 
-        public async Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId, bool hostedpages = false)
+        public async Task<JObject> UpdateSubscription(object input, string subscriptionId, bool hostedpages = false)
         {
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
@@ -66,13 +66,13 @@ namespace Zoho.Services
             return await client.InvokePutAsync(Name, $"subscriptions/{subscriptionId}", input);
         }
 
-        public async Task<JObject> CreateRenewalAsync(string subscriptionId, object input)
+        public async Task<JObject> CreateRenewal(string subscriptionId, object input)
         {
             var client = await _factory.CreateAsync();
             return await client.InvokePostAsync(Name, $"subscriptions/{subscriptionId}/postpone", input);
         }
 
-        public async Task<JObject> AddChargeAsync(string subscriptionId, JObject input)
+        public async Task<JObject> AddCharge(string subscriptionId, JObject input)
         {
             if (input == null)
             {
@@ -162,6 +162,15 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<IEnumerable<T>>(Name, $"customers?email={email}", "customers");
             return response;
         }
+        
+        public async Task<T> GetCustomersById<T>(string customerId)
+        {
+            //GET https://www.zohoapis.com/billing/v1/customers?customer_id=1111111
+            var client = await _factory.CreateAsync();
+            //https://www.zohoapis.com/billing/v1/customers
+            var response = await client.InvokeGetAsync<T>(Name, $"customers/{customerId}", "customer");
+            return response;
+        }
 
 
         public async Task<List<T>> GetCustomers<T>()
@@ -208,15 +217,20 @@ namespace Zoho.Services
             return response.ToList();
         }
 
-        public async Task<List<JObject>> GetSubscriptions()
+        public async Task<List<JObject>> GetSubscriptions(string customerId = "")
         {
-            return await GetSubscriptions<JObject>();
+            return await GetSubscriptions<JObject>(customerId);
         }
 
-        public async Task<List<T>> GetSubscriptions<T>()
+        public async Task<List<T>> GetSubscriptions<T>(string customerId = "")
         {
             var client = await _factory.CreateAsync();
-            var response = await client.InvokeGetAsync<T[]>(Name, "subscriptions", "subscriptions");
+            var url = "subscriptions";
+            if (!string.IsNullOrWhiteSpace(customerId))
+            {
+                url += $"?customer_id={customerId}";
+            }
+            var response = await client.InvokeGetAsync<T[]>(Name, url, "subscriptions");
             return response.ToList();
         }
         

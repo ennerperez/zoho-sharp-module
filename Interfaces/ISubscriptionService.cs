@@ -10,11 +10,11 @@ namespace Zoho.Interfaces
     /// </summary>
     public interface ISubscriptionService : IZohoService
     {
-        Task<JObject> AddChargeAsync(string subscriptionId, JObject input);
+        Task<JObject> AddCharge(string subscriptionId, JObject input);
         Task<bool> SetCardCollect(string subscriptionId, JObject input);
 
-        Task<JObject> CreateSubscriptionAsync(object input, bool hostedpages = false);
-        Task<JObject> CreateRenewalAsync(string subscriptionId, object input);
+        Task<JObject> CreateSubscription(object input, bool hostedpages = false);
+        Task<JObject> CreateRenewal(string subscriptionId, object input);
         Task<JObject> RequestPaymentMethod(string customerId);
         Task<List<JObject>> GetCards(string customerId);
         Task<List<JObject>> GetProducts();
@@ -31,17 +31,19 @@ namespace Zoho.Interfaces
 
         Task<IEnumerable<T>> GetCustomersByEmail<T>(string email);
 
-        Task<JObject> CreateCustomerAsync(object input);
-        Task<JObject> DeleteCustomerAsync(string id);
+        Task<T> GetCustomersById<T>(string customerId);
 
-        Task<JObject> UpdateCustomerAsync(object input, string customerId);
+        Task<JObject> CreateCustomer(object input);
+        Task<JObject> DeleteCustomer(string id);
 
-        Task<JObject> UpdateSubscriptionAsync(object input, string subscriptionId, bool hostedpages = false);
+        Task<JObject> UpdateCustomer(object input, string customerId);
 
-        Task<List<JObject>> GetSubscriptions();
+        Task<JObject> UpdateSubscription(object input, string subscriptionId, bool hostedpages = false);
+
+        Task<List<JObject>> GetSubscriptions(string customerId = "");
 
         Task<T> GetSubscription<T>(string subscriptionId);
-        Task<List<T>> GetSubscriptions<T>();
+        Task<List<T>> GetSubscriptions<T>(string customerId = "");
         Task<List<T>> GetSubscriptionInvoice<T>();
 
         Task<JObject> CancelSubscription<T>(string subscriptionId);

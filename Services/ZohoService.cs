@@ -403,18 +403,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
 
         public async Task<TOutput> InvokePostZohoPdfAsync<TOutput>(string url, string[] attachmentsIds, string subnode = "")
@@ -454,12 +443,7 @@ namespace Zoho.Services
                 processResultFile2 = await ProcessResponse<TOutput>(response, subnode);
             }
 
-            if (processResultFile2 != null)
-            {
-                return processResultFile2.Data;
-            }
-
-            throw processResultFile2.Error;
+            return GetProcessResultData(processResultFile2);
         }
 
         public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input, string fileName, string subnode = "")
@@ -510,18 +494,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
 
         public async Task<JObject> InvokePutAsync(string module, string url, object input, string subnode = "")
@@ -585,18 +558,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
 
 
@@ -649,18 +611,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
         
         public async Task<Dictionary<string, byte[]>> InvokeGetImageAsync(string module, string url)
@@ -776,17 +727,22 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
+            return GetProcessResultData(processResult);
+        }
+
+        private static TOutput GetProcessResultData<TOutput>(ProcessEntity<TOutput> processResult)
+        {
+            if (processResult != null && processResult.Error != null)
             {
                 throw processResult.Error;
             }
-            else
+            else if (processResult != null && processResult.Data != null)
             {
                 return processResult.Data;
+            }
+            else
+            {
+                throw new InvalidOperationException("API call did not completed successfully");
             }
         }
     }
