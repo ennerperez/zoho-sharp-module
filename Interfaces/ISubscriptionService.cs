@@ -26,6 +26,8 @@ namespace Zoho.Interfaces
         Task<List<JObject>> GetCoupons();
         Task<List<T>> GetCoupons<T>();
 
+        Task<T> GetCouponRetrieve<T>(string coupon);
+
         Task<List<JObject>> GetCustomers();
         Task<List<T>> GetCustomers<T>();
 
