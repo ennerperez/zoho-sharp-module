@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -61,7 +59,7 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}?fields={string.Join(",", fields)}&per_page={perPage}");
             return response;
         }
-        
+
         public async Task<Response<string>[]> CreateRecordAsync(Enums.Module module, object input)
         {
             var client = await _factory.CreateAsync();
@@ -69,7 +67,7 @@ namespace Zoho.Services
             var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
             return await client.InvokePostAsync<Response<string>[]>(Name, $"{moduleApiName}", input, "data");
         }
-        
+
         public async Task<Response<string>[]> UpdateRecordAsync(Enums.Module module, string recordId, object input)
         {
             var client = await _factory.CreateAsync();
@@ -115,7 +113,7 @@ namespace Zoho.Services
             //var response = $"https://www.zohoapis.com/crm/v6/{moduleApiName}/{accountId}/Attachments/{recordId}";
             try
             {
-                
+
                 return data;
             }
             catch (Exception ex)

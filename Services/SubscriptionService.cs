@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Interfaces;
-using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -62,7 +61,7 @@ namespace Zoho.Services
             //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
             if (hostedpages)
                 return await client.InvokePostAsync(Name, "hostedpages/updatesubscription", input);
-            
+
             return await client.InvokePutAsync(Name, $"subscriptions/{subscriptionId}", input);
         }
 
@@ -153,7 +152,7 @@ namespace Zoho.Services
         {
             return await GetCustomers<JObject>();
         }
-        
+
         public async Task<IEnumerable<T>> GetCustomersByEmail<T>(string email)
         {
             //GET https://www.zohoapis.com/billing/v1/customers?email=edgar300@grr.la
@@ -162,7 +161,7 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<IEnumerable<T>>(Name, $"customers?email={email}", "customers");
             return response;
         }
-        
+
         public async Task<T> GetCustomersById<T>(string customerId)
         {
             //GET https://www.zohoapis.com/billing/v1/customers?customer_id=1111111
@@ -216,7 +215,7 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>(Name, "coupons", "coupons");
             return response.ToList();
         }
-        
+
         public async Task<T> GetCouponRetrieve<T>(string coupon)
         {
             var client = await _factory.CreateAsync();
@@ -240,7 +239,7 @@ namespace Zoho.Services
             var response = await client.InvokeGetAsync<T[]>(Name, url, "subscriptions");
             return response.ToList();
         }
-        
+
         public async Task<List<JObject>> GetSubscriptionInvoice()
         {
             return await GetSubscriptionInvoice<JObject>();
