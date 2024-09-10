@@ -8,7 +8,7 @@ using System.Collections.Generic;
 // ReSharper disable InconsistentNaming
 namespace Zoho.Records
 {
-    public record PlanCoupon(string PlanCode, string Name);
+    public record PlanCoupon(string plan_code, string Name);
     public record AddonCoupon(string AddonCode, string Name);
 
     public record Coupon(
