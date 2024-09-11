@@ -8,28 +8,31 @@ using System.Collections.Generic;
 // ReSharper disable InconsistentNaming
 namespace Zoho.Records
 {
-    public record PlanCoupon(string plan_code, string Name);
-    public record AddonCoupon(string AddonCode, string Name);
+    public record PlanCoupon(string plan_code, string name);
+    public record AddonCoupon(string addon_code, string name);
 
     public record Coupon(
-        string CouponCode,
-        string Name,
-        string Description,
-        string Type,
-        int Duration,
-        string Status,
-        string DiscountBy,
-        int DiscountValue,
-        string ProductId,
-        int MaxRedemption,
-        int RedemptionCount,
-        DateTime ExpiryAt,
-        string ApplyToPlans,
-        List<PlanCoupon> Plans,
-        string ApplyToAddons,
-        List<AddonCoupon> Addons,
-        DateTime CreatedTime,
-        DateTime UpdatedTime
+        string coupon_id,
+        string coupon_code,
+        string name,
+        string product_name,
+        string description,
+        bool is_active,
+        string type,
+        int? duration,
+        string status,
+        string discount_by,
+        int? discount_value,
+        string product_id,
+        int? max_redemption,
+        int? max_redemption_count,
+        DateTime? expiry_at,
+        string apply_to_plans,
+        List<PlanCoupon> plans,
+        string apply_to_addons,
+        List<AddonCoupon> addons,
+        DateTime? created_time,
+        DateTime? updated_time
     );
 }
 #endif
