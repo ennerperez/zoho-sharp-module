@@ -18,6 +18,8 @@ namespace Zoho.Records.Project
         string priority,
         string description,
         bool subtasks,
+        DateTime last_updated_time_format,
+        DateTime end_date,
         Attachtment[] attachments
     );
 }
