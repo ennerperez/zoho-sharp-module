@@ -11,6 +11,7 @@ namespace Zoho.Records.Project
         string id,
         string name,
         DateTime start_date_format,
+        DateTime completed_time_format,
         DateTime end_date_format,
         CustomField[] custom_fields,
         Status status,
