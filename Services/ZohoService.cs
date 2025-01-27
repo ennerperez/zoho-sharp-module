@@ -1,6 +1,7 @@
 ﻿//#define EXPIRED_TOKEN
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Zoho.Interfaces;
 using Zoho.Models;
 
 // ReSharper disable RedundantAssignment
@@ -283,6 +285,118 @@ namespace Zoho.Services
             }
         }
 
+        public async Task<PaginatedList<T>> ProcessPaginatedList<T>(HttpResponseMessage response, string subnode)
+        {
+            if (null == response)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (string.IsNullOrWhiteSpace(subnode))
+            {
+                throw new ArgumentNullException(nameof(subnode));
+            }
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Response errorResponse;
+                try
+                {
+                    var rawErrorResponse = await response.Content.ReadAsStringAsync();
+
+                    if (_options.Debug)
+                    {
+                        if (!string.IsNullOrWhiteSpace(rawErrorResponse))
+                        {
+                            try
+                            {
+                                // ReSharper disable once RedundantAssignment
+                                var path = "responses";
+#if DEBUG
+                                path = Path.Combine("bin", "Debug", "responses");
+#endif
+                                if (!Directory.Exists(path))
+                                {
+                                    Directory.CreateDirectory(path);
+                                }
+
+                                var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
+                                File.WriteAllText(file, rawErrorResponse);
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                            }
+                        }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(rawErrorResponse))
+                    {
+                        throw new InvalidDataException();
+                    }
+
+                    errorResponse = JsonConvert.DeserializeObject<Response>(rawErrorResponse);
+                }
+                catch (Exception exception)
+                {
+                    return new PaginatedList<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
+                }
+
+                if (null == errorResponse || string.IsNullOrWhiteSpace(errorResponse.Message)) return new PaginatedList<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred") };
+
+                return new PaginatedList<T> { Error = new InvalidOperationException(errorResponse.Message) };
+            }
+
+            try
+            {
+                var rawResponseContent = await response.Content.ReadAsStringAsync();
+
+                if (_options.Debug)
+                {
+                    if (!string.IsNullOrWhiteSpace(rawResponseContent))
+                    {
+                        try
+                        {
+                            var path = "responses";
+#if DEBUG
+                            path = Path.Combine("bin", "Debug", "responses");
+#endif
+                            if (!Directory.Exists(path))
+                            {
+                                Directory.CreateDirectory(path);
+                            }
+
+                            var file = Path.Combine(path, DateTime.Now.Ticks.ToString() + ".json");
+                            File.WriteAllText(file, rawResponseContent);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(rawResponseContent))
+                {
+                    throw new InvalidDataException();
+                }
+
+                var innerNodeContent = JsonConvert.DeserializeObject<JObject>(rawResponseContent);
+                if (innerNodeContent == null || !innerNodeContent.ContainsKey(subnode) || innerNodeContent[subnode] == null)
+                {
+                    throw new InvalidOperationException("Subnode was not found in the response");
+                }
+
+                var result = JsonConvert.DeserializeObject<PaginatedList<T>>(rawResponseContent);
+                result.Data = innerNodeContent[subnode].ToObject<JArray>().Select(m => m.ToObject<T>()).ToList();
+                return result;
+            }
+            catch (Exception exception)
+            {
+                return new PaginatedList<T> { Error = new InvalidOperationException("API call did not completed successfully or response parse error occurred", exception) };
+            }
+        }
+
         public async Task<JObject> InvokePostAsync(string module, string url, object input, string subnode = "")
         {
             return await InvokePostAsync<JObject>(module, url, input, subnode);
@@ -346,6 +460,7 @@ namespace Zoho.Services
                         (content as MultipartFormDataContent).Add(new StringContent(jsonDetailValue), "attachment_details");
                         //(content as MultipartFormDataContent).Add(new StringContent("{\"location_details\":{\"folder_id\":\"-1\",\"project_id\":\"1947441000000114005\"},\"storage_type\":\"workdrive\"}"), "attachment_details");
                     }
+
                     request3.Content = content;
                     var responseZohoFile = await client3.SendAsync(request3);
                     responseZohoFile.EnsureSuccessStatusCode();
@@ -355,15 +470,18 @@ namespace Zoho.Services
                         processResultFile = await ProcessResponse<TOutput>(responseZohoFile, subnode);
                         break;
                     }
+
                     if (responseZohoFile.StatusCode == HttpStatusCode.Unauthorized)
                         await GetTokenAsync(true);
 
                     slap++;
                 }
+
                 if (processResultFile != null)
                 {
                     return processResultFile.Data;
                 }
+
                 throw new InvalidOperationException("API call did not completed successfully");
             }
             else if (mediaType == System.Net.Mime.MediaTypeNames.Application.Json)
@@ -435,6 +553,7 @@ namespace Zoho.Services
                 {
                     break;
                 }
+
                 attemptCount2++;
             }
 
@@ -566,6 +685,11 @@ namespace Zoho.Services
         {
             return await InvokeGetAsync<JObject>(module, url, subnode);
         }
+        
+        public async Task<JObject> InvokeGetAsPaginatedListAsync(string module, string url, string subnode = "")
+        {
+            return await InvokeGetAsync<JObject>(module, url, subnode);
+        }
 
         public async Task<TOutput> InvokeGetAsync<TOutput>(string module, string url, string subnode = "")
         {
@@ -612,6 +736,53 @@ namespace Zoho.Services
             }
 
             return GetProcessResultData(processResult);
+        }
+        
+        public async Task<PaginatedList<TOutput>> InvokeGetAsPaginatedListAsync<TOutput>(string module, string url, string subnode = "")
+        {
+            if (!_options.Modules[module].Enabled)
+            {
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
+            }
+
+            if (!url.StartsWith("http"))
+            {
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
+
+                url = $"{apiBaseUrl}{url}";
+            }
+
+            var retryCount = 0;
+            var isSuccessStatusCode = false;
+            PaginatedList<TOutput> processResult = null;
+            while (!isSuccessStatusCode && retryCount < 3)
+            {
+                SetHttpClient();
+                var response = await _httpClient.GetAsync(url);
+                isSuccessStatusCode = response.IsSuccessStatusCode;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await GetTokenAsync(true);
+                }
+                else
+                {
+                    processResult = await ProcessPaginatedList<TOutput>(response, subnode);
+
+                    if (processResult.Error != null)
+                    {
+                        isSuccessStatusCode = false;
+                        await GetTokenAsync(true);
+                    }
+                }
+
+                retryCount++;
+            }
+
+            return processResult;
         }
 
         public async Task<Dictionary<string, byte[]>> InvokeGetImageAsync(string module, string url)
@@ -675,10 +846,7 @@ namespace Zoho.Services
                 throw new InvalidOperationException("API call did not complete successfully");
             }
 
-            var result = new Dictionary<string, byte[]>
-            {
-                { nameImage??"", imageData }
-            };
+            var result = new Dictionary<string, byte[]> { { nameImage ?? "", imageData } };
 
             return result;
         }
@@ -727,10 +895,10 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            return GetProcessResultData(processResult);
+            return GetProcessResultData<TOutput>(processResult);
         }
 
-        private static TOutput GetProcessResultData<TOutput>(ProcessEntity<TOutput> processResult)
+        private static TOutput GetProcessResultData<TOutput>(IResponseEntity<TOutput> processResult)
         {
             if (processResult != null && processResult.Error != null)
             {
@@ -745,5 +913,6 @@ namespace Zoho.Services
                 throw new InvalidOperationException("API call did not completed successfully");
             }
         }
+        
     }
 }
