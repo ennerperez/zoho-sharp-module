@@ -1,5 +1,5 @@
-#if NET6_0_OR_GREATER
-﻿using System;
+﻿#if NET6_0_OR_GREATER
+using System;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
 // ReSharper disable once CheckNamespace
@@ -11,6 +11,7 @@ namespace Zoho.Records.Project
         string id,
         string name,
         DateTime start_date_format,
+        DateTime completed_time_format,
         DateTime end_date_format,
         CustomField[] custom_fields,
         Status status,
@@ -18,7 +19,9 @@ namespace Zoho.Records.Project
         string priority,
         string description,
         bool subtasks,
-        Zoho.Records.Project.Attachtment[] attachments
+        DateTime last_updated_time_format,
+        DateTime end_date,
+        Attachtment[] attachments
     );
 }
 #endif

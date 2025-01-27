@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Zoho.Interfaces;
 using Zoho.Models;
+using Zoho.Records.Project;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -67,6 +69,14 @@ namespace Zoho.Services
             return await client.InvokePostAsync<Response<string>[]>(Name, $"{moduleApiName}", input, "data");
         }
 
+        public async Task<Response<string>[]> UpdateRecordAsync(Enums.Module module, string recordId, object input)
+        {
+            var client = await _factory.CreateAsync();
+            //{api-domain}/crm/{version}/{module_api_name}
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
+            return await client.InvokePutAsync<Response<string>[]>(Name, $"{moduleApiName}/{recordId}", input, "data");
+        }
+
         public async Task<PageResult<JObject>> GetAttachments(Enums.Module module, string recordId, params string[] fields)
         {
             return await GetAttachments<JObject>(module, recordId, fields);
@@ -81,6 +91,38 @@ namespace Zoho.Services
             if (fields == null || !fields.Any()) fields = new[] { "id", "Owner", "File_Name", "Created_Time", "Parent_Id" };
             var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/{recordId}/Attachments?fields={string.Join(",", fields)}");
             return response;
+        }
+        public async Task<PageResult<T>> DeleteAttachment<T>(Enums.Module module, string accountId, string recordId)
+        {
+            //{api-domain}/crm/{version}/{module_api_name}/{record_id}/Attachments/{attachment_id}
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
+
+            var client = await _factory.CreateAsync();
+            var response = await client.InvokeDeleteAsync<PageResult<T>>(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}", "Data");
+            return response;
+        }
+        public async Task<Dictionary<string, byte[]>> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId)
+        {
+            //{dominio-api}/crm/{versión}/{module_api_name}/{record_ID}/actions/download_fields_attachment   ?fields_attachment_id=554023000001736007
+            //"https://www.zohoapis.com/crm/v6/Accounts/100023009/Attachments/100013547"
+            var moduleApiName = Enum.GetName(typeof(Enums.Module), module)?.Replace("_", " ");
+
+            var client = await _factory.CreateAsync();
+            //if (fields == null || !fields.Any()) fields = new[] { "id", "Owner", "File_Name", "Created_Time", "Parent_Id" };
+            //var response = await client.InvokeGetAsync<PageResult<T>>(Name, $"{moduleApiName}/{recordId}/download_fields_attachment?fields={string.Join(",", fields)}");
+            var data = await client.InvokeGetImageAsync(Name, $"{moduleApiName}/{accountId}/Attachments/{recordId}");
+            //var response = $"https://www.zohoapis.com/crm/v6/{moduleApiName}/{accountId}/Attachments/{recordId}";
+            try
+            {
+
+                return data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al escribir en el archivo: {ex.Message}");
+            }
+
+            return null;
         }
 
         public async Task<string> GetOption(string key)

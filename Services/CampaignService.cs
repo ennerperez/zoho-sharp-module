@@ -62,7 +62,7 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
 
             var listKey = client.GetOption(Name, designation);
-            var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active";
+            var endpoint = $"getlistsubscribers?resfmt=JSON&listkey={listKey}&status=active&range={ushort.MaxValue}";
 
             var response = await client.InvokeGetAsync<ListOfDetails<JObject>>(Name, endpoint);
 

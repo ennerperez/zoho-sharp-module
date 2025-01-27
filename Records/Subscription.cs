@@ -15,6 +15,7 @@ namespace Zoho.Records
         decimal amount,
         decimal sub_total,
         string status,
+        int? interval,
         string interval_unit,
         DateTime? next_billing_at,
         DateTime? last_billing_at,

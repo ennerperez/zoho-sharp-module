@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Models;
+using Zoho.Records.Project;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Interfaces
@@ -18,6 +20,10 @@ namespace Zoho.Interfaces
         Task<PageResult<T>> GetAttachments<T>(Enums.Module module, string recordId, params string[] fields);
 
         Task<Response<string>[]> CreateRecordAsync(Enums.Module module, object input);
+        Task<Response<string>[]> UpdateRecordAsync(Enums.Module module, string recordId, object input);
 
+        Task<Dictionary<string, byte[]>> GetDownloadAttachments<T>(Enums.Module module, string accountId, string recordId);
+
+        Task<PageResult<T>> DeleteAttachment<T>(Enums.Module module, string accountId, string recordId);
     }
 }

@@ -288,7 +288,7 @@ namespace Zoho.Services
             return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Zoho.Structures.Attachment> attachments = null)
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Structures.Attachment> attachments = null)
         {
             if (input == null && attachments == null)
             {
@@ -403,18 +403,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
 
         public async Task<TOutput> InvokePostZohoPdfAsync<TOutput>(string url, string[] attachmentsIds, string subnode = "")
@@ -454,12 +443,7 @@ namespace Zoho.Services
                 processResultFile2 = await ProcessResponse<TOutput>(response, subnode);
             }
 
-            if (processResultFile2 != null)
-            {
-                return processResultFile2.Data;
-            }
-
-            throw processResultFile2.Error;
+            return GetProcessResultData(processResultFile2);
         }
 
         public async Task<TOutput> InvokePostFileAsync<TOutput>(string module, string url, byte[] input, string fileName, string subnode = "")
@@ -510,18 +494,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
 
         public async Task<JObject> InvokePutAsync(string module, string url, object input, string subnode = "")
@@ -585,18 +558,7 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
-            {
-                throw processResult.Error;
-            }
-            else
-            {
-                return processResult.Data;
-            }
+            return GetProcessResultData(processResult);
         }
 
 
@@ -649,18 +611,76 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
+            return GetProcessResultData(processResult);
+        }
+
+        public async Task<Dictionary<string, byte[]>> InvokeGetImageAsync(string module, string url)
+        {
+            if (!_options.Modules[module].Enabled)
             {
-                throw new InvalidOperationException("API call did not completed successfully");
+                throw new InvalidOperationException($"The required module ({module}) is not enabled");
             }
-            else if (processResult.Error != null)
+
+            if (!url.StartsWith("http"))
             {
-                throw processResult.Error;
+                var apiBaseUrl = _options.Modules[module].Url;
+                if (!apiBaseUrl.EndsWith("/"))
+                {
+                    apiBaseUrl = apiBaseUrl + "/";
+                }
+
+                url = $"{apiBaseUrl}{url}";
             }
-            else
+
+            var retryCount = 0;
+            var isSuccessStatusCode = false;
+            byte[] imageData = null;
+            var typeImage = "";
+            var nameImage = "";
+            while (!isSuccessStatusCode && retryCount < 3)
             {
-                return processResult.Data;
+                SetHttpClient();
+                var response = await _httpClient.GetAsync(url);
+                isSuccessStatusCode = response.IsSuccessStatusCode;
+
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    await GetTokenAsync(true);
+                }
+                else
+                {
+                    try
+                    {
+                        // Leer datos binarios directamente
+                        nameImage = response.Content.Headers.ContentDisposition?.FileNameStar;
+                        imageData = await response.Content.ReadAsByteArrayAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error reading image data: {ex.Message}");
+                    }
+
+                    if (imageData == null || imageData.Length == 0)
+                    {
+                        isSuccessStatusCode = false;
+                        await GetTokenAsync(true);
+                    }
+                }
+
+                retryCount++;
             }
+
+            if (imageData == null)
+            {
+                throw new InvalidOperationException("API call did not complete successfully");
+            }
+
+            var result = new Dictionary<string, byte[]>
+            {
+                { nameImage??"", imageData }
+            };
+
+            return result;
         }
 
         public async Task<JObject> InvokeDeleteAsync(string module, string url, object input, string subnode = "")
@@ -677,6 +697,7 @@ namespace Zoho.Services
 
             // Sanity patch for base URL to end with /
             var apiBaseUrl = _options.Modules[module].Url;
+
             if (!apiBaseUrl.EndsWith("/"))
             {
                 apiBaseUrl = apiBaseUrl + "/";
@@ -692,7 +713,7 @@ namespace Zoho.Services
             while (!IsSuccessStatusCode && retryCount < 3)
             {
                 SetHttpClient();
-                var response = await _httpClient.PostAsync(url, content);
+                var response = await _httpClient.DeleteAsync(url);
                 IsSuccessStatusCode = response.IsSuccessStatusCode;
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
@@ -706,17 +727,22 @@ namespace Zoho.Services
                 retryCount++;
             }
 
-            if (processResult == null)
-            {
-                throw new InvalidOperationException("API call did not completed successfully");
-            }
-            else if (processResult.Error != null)
+            return GetProcessResultData(processResult);
+        }
+
+        private static TOutput GetProcessResultData<TOutput>(ProcessEntity<TOutput> processResult)
+        {
+            if (processResult != null && processResult.Error != null)
             {
                 throw processResult.Error;
             }
-            else
+            else if (processResult != null && processResult.Data != null)
             {
                 return processResult.Data;
+            }
+            else
+            {
+                throw new InvalidOperationException("API call did not completed successfully");
             }
         }
     }
