@@ -33,6 +33,17 @@ namespace Zoho.Services
             return response;
         }
 
+        public async Task<T[]> GetProjectsSearch<T>(string search, long? portalId)
+        {
+            var client = await _factory.CreateAsync();
+            portalId ??= client.GetOption<long>(Name, "PortalId");
+
+            var encodedToSearch = Uri.EscapeDataString(search);
+
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/search?search_term={encodedToSearch}&module=projects", "projects");
+            return response;
+        }
+
         /// <summary>
         /// /portal/[PORTALID]/projects/[PROJECTID]/tasks/
         /// </summary>
@@ -112,14 +123,14 @@ namespace Zoho.Services
         /// /portal/[PORTALID]/projects/[PROJECTID]/tasks/search?search_term=
         /// </summary>
         /// <returns></returns>
-        public async Task<T[]> GetTasksSearch<T>(long projectId, long? portalId, string search)
+        public async Task<T[]> GetTasksSearch<T>(string search, string projectId, long? portalId)
         {
             var client = await _factory.CreateAsync();
             portalId ??= client.GetOption<long>(Name, "PortalId");
 
             var encodedToSearch = Uri.EscapeDataString(search);
 
-            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/tasks/search?search_term={encodedToSearch}/", "tasks");
+            var response = await client.InvokeGetAsync<T[]>(Name, $"portal/{portalId}/projects/{projectId}/search?search_term={encodedToSearch}&module=tasks", "tasks");
             return response;
         }
 
