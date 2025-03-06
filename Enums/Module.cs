@@ -30,6 +30,7 @@ namespace Zoho.Enums
         Activities,
         Projects,
         Booking,
-        Companies
+        Companies,
+        Congress,
     }
 }
