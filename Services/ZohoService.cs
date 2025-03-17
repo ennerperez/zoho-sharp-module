@@ -806,7 +806,6 @@ namespace Zoho.Services
             var retryCount = 0;
             var isSuccessStatusCode = false;
             byte[] imageData = null;
-            var typeImage = "";
             var nameImage = "";
             while (!isSuccessStatusCode && retryCount < 3)
             {
@@ -873,16 +872,14 @@ namespace Zoho.Services
 
             url = $"{apiBaseUrl}{url}";
 
-            HttpContent content = null;
-
             var retryCount = 0;
-            var IsSuccessStatusCode = false;
+            var isSuccessStatusCode = false;
             ProcessEntity<TOutput> processResult = null;
-            while (!IsSuccessStatusCode && retryCount < 3)
+            while (!isSuccessStatusCode && retryCount < 3)
             {
                 SetHttpClient();
                 var response = await _httpClient.DeleteAsync(url);
-                IsSuccessStatusCode = response.IsSuccessStatusCode;
+                isSuccessStatusCode = response.IsSuccessStatusCode;
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     await GetTokenAsync(true);

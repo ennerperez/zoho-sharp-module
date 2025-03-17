@@ -1,6 +1,4 @@
-﻿// ReSharper disable InconsistentNaming
-
-namespace Zoho.Enums
+﻿namespace Zoho.Enums
 {
     public enum Module
     {

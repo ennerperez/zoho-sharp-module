@@ -15,6 +15,10 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2"/>
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0' AND ('$(ManagePackageVersionsCentrally)' == '' OR '$(ManagePackageVersionsCentrally)' == 'false')">
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3"/>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.3"/>
+  </ItemGroup>
   <ItemGroup Condition="'$(ManagePackageVersionsCentrally)' == 'true'">
     <PackageReference Include="Newtonsoft.Json"/>
     <PackageReference Include="Microsoft.Extensions.Http"/>
