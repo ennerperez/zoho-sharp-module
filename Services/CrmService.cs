@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Zoho.Interfaces;
 using Zoho.Models;
-using Zoho.Records.Project;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
