@@ -397,14 +397,14 @@ namespace Zoho.Services
             }
         }
 
-        public async Task<JObject> InvokePostAsync(string module, string url, object input, string subnode = "")
+        public async Task<JObject> InvokePostAsync(string module, string url, object input = null, string subnode = "")
         {
             return await InvokePostAsync<JObject>(module, url, input, subnode);
         }
 
-        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Structures.Attachment> attachments = null)
+        public async Task<TOutput> InvokePostAsync<TOutput>(string module, string url, object input = null, string subnode = "", string mediaType = System.Net.Mime.MediaTypeNames.Application.Json, Dictionary<string, Structures.Attachment> attachments = null)
         {
-            if (input == null && attachments == null)
+            if (input == null && attachments == null && mediaType != System.Net.Mime.MediaTypeNames.Application.FormUrlEncoded)
             {
                 throw new ArgumentNullException("input");
             }
@@ -489,11 +489,15 @@ namespace Zoho.Services
                 var data = JsonConvert.SerializeObject(input, Formatting.None, SerializerSettings);
                 content = new StringContent(data, Encoding.UTF8, mediaType);
             }
-            else
+            else if (input != null)
             {
                 var props = input.GetType().GetProperties();
                 var values = props.Select(m => new KeyValuePair<string, string>(m.Name, m.GetValue(input)?.ToString()));
                 content = new FormUrlEncodedContent(values);
+            }
+            else
+            {
+                content = new StringContent(string.Empty);
             }
 
             var retryCount = 0;
@@ -685,7 +689,7 @@ namespace Zoho.Services
         {
             return await InvokeGetAsync<JObject>(module, url, subnode);
         }
-        
+
         public async Task<JObject> InvokeGetAsPaginatedListAsync(string module, string url, string subnode = "")
         {
             return await InvokeGetAsync<JObject>(module, url, subnode);
@@ -737,7 +741,7 @@ namespace Zoho.Services
 
             return GetProcessResultData(processResult);
         }
-        
+
         public async Task<PaginatedList<TOutput>> InvokeGetAsPaginatedListAsync<TOutput>(string module, string url, string subnode = "")
         {
             if (!_options.Modules[module].Enabled)
@@ -910,6 +914,5 @@ namespace Zoho.Services
                 throw new InvalidOperationException("API call did not completed successfully");
             }
         }
-        
     }
 }

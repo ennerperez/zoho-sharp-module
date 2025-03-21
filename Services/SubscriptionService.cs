@@ -277,7 +277,13 @@ namespace Zoho.Services
         public async Task<JObject> CancelSubscription<T>(string subscriptionId)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{subscriptionId}/cancel");
+            return await client.InvokePostAsync<JObject>(Name, $"subscriptions/{subscriptionId}/cancel", mediaType: System.Net.Mime.MediaTypeNames.Application.FormUrlEncoded);
+        }
+        
+        public async Task<JObject> DeleteSubscription<T>(string subscriptionId)
+        {
+            var client = await _factory.CreateAsync();
+            return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{subscriptionId}", subscriptionId, mediaType: System.Net.Mime.MediaTypeNames.Application.FormUrlEncoded);
         }
 
         public async Task<string> GetOption(string key)
