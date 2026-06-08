@@ -23,7 +23,7 @@ namespace Zoho.Models
 
         [JsonIgnore]
         public Exception Error { get; set; }
-        
+
         public bool IsSuccess() => Error == null;
     }
 }

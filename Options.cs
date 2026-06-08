@@ -5,7 +5,9 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Zoho
 {
+#pragma warning disable CA1724
     public class Options
+#pragma warning restore CA1724
     {
         public string ClientId { get; set; }
         public string OrganizationId { get; set; }

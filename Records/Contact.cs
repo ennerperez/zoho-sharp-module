@@ -5,12 +5,10 @@
 // ReSharper disable InconsistentNaming
 namespace Zoho.Records.Project
 {
-
     public record Contact(
         string Last_Name,
         string First_Name,
         string Email
     );
-
 }
 #endif

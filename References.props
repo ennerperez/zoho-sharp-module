@@ -24,4 +24,18 @@
     <PackageReference Include="Microsoft.Extensions.Http"/>
     <PackageReference Include="Microsoft.Extensions.Options"/>
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="**\Zoho\http-client.http">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="**\Zoho\http-client.env.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>http-client.http</DependentUpon>
+    </None>
+    <None Update="**\Zoho\http-client.private.env.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>http-client.http</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>

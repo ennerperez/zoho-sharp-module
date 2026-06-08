@@ -7,7 +7,9 @@ using Zoho.Services;
 // ReSharper disable once CheckNamespace
 namespace Zoho
 {
+#pragma warning disable CA1724
     public static class Extensions
+#pragma warning restore CA1724
     {
         public static IServiceCollection AddZohoServices(this IServiceCollection services, Action<Options> configureOptions, ServiceLifetime lifetime = ServiceLifetime.Singleton)
         {

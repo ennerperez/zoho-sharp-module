@@ -5,7 +5,9 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Zoho
 {
+#pragma warning disable CA1716
     public class Module
+#pragma warning restore CA1716
     {
         public Module()
         {
