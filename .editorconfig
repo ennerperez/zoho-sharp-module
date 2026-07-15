@@ -1,0 +1,45 @@
+﻿###############################
+# Core EditorConfig Options   #
+###############################
+
+# All files
+[*]
+indent_style = space
+
+# Verify settings
+[*.{received,verified}.{json,txt,xml}]
+end_of_line = lf
+indent_size = unset
+indent_style = unset
+insert_final_newline = false
+tab_width = unset
+trim_trailing_whitespace = false
+
+# Zoho is maintained and published as a separate Git submodule.
+[*.cs]
+charset = unset
+dotnet_diagnostic.IDE0003.severity = none
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0040.severity = none
+dotnet_diagnostic.IDE0160.severity = none
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1002.severity = none
+dotnet_diagnostic.CA1056.severity = none
+dotnet_diagnostic.CA2000.severity = none
+dotnet_diagnostic.CA1815.severity = none
+dotnet_diagnostic.CA1819.severity = none
+dotnet_diagnostic.CA1054.severity = none
+dotnet_diagnostic.CA1510.severity = none
+dotnet_diagnostic.CA1507.severity = none
+dotnet_diagnostic.CA1304.severity = none
+dotnet_diagnostic.CA1311.severity = none
+dotnet_diagnostic.CA2263.severity = none
+dotnet_diagnostic.CA1307.severity = none
+dotnet_diagnostic.CA1725.severity = none
+dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.CA2234.severity = none
+dotnet_diagnostic.CA1873.severity = none
+dotnet_diagnostic.CA1310.severity = none
+dotnet_diagnostic.CA1724.severity = none
