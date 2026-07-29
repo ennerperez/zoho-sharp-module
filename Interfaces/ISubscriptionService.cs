@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Interfaces
@@ -42,12 +43,13 @@ namespace Zoho.Interfaces
 
         Task<JObject> UpdateSubscription(object input, string subscriptionId, bool hostedpages = false);
 
-        Task<List<JObject>> GetSubscriptions(string customerId = "");
+        Task<PaginatedList<JObject>> GetSubscriptions(string customerId = "", int page = 1, int pageSize = 200);
 
         Task<T> GetSubscription<T>(string subscriptionId);
-        Task<List<T>> GetSubscriptions<T>(string customerId = "");
+        Task<PaginatedList<T>> GetSubscriptions<T>(string customerId = "", int page = 1, int pageSize = 200);
         Task<List<T>> GetSubscriptionInvoice<T>();
 
         Task<JObject> CancelSubscription<T>(string subscriptionId);
+        Task<JObject> DeleteSubscription<T>(string subscriptionId);
     }
 }

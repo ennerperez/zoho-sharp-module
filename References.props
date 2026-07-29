@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Condition="'$(ManagePackageVersionsCentrally)' == '' OR '$(ManagePackageVersionsCentrally)' == 'false'">
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4"/>
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0' AND ('$(ManagePackageVersionsCentrally)' == '' OR '$(ManagePackageVersionsCentrally)' == 'false')">
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0"/>
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0"/>
   </ItemGroup>
@@ -15,9 +15,31 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2"/>
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0' AND ('$(ManagePackageVersionsCentrally)' == '' OR '$(ManagePackageVersionsCentrally)' == 'false')">
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.11"/>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.11"/>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0' AND ('$(ManagePackageVersionsCentrally)' == '' OR '$(ManagePackageVersionsCentrally)' == 'false')">
+    <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10"/>
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.10"/>
+  </ItemGroup>
   <ItemGroup Condition="'$(ManagePackageVersionsCentrally)' == 'true'">
     <PackageReference Include="Newtonsoft.Json"/>
     <PackageReference Include="Microsoft.Extensions.Http"/>
     <PackageReference Include="Microsoft.Extensions.Options"/>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="**\Zoho\http-client.http">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="**\Zoho\http-client.env.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>http-client.http</DependentUpon>
+    </None>
+    <None Update="**\Zoho\http-client.private.env.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <DependentUpon>http-client.http</DependentUpon>
+    </None>
   </ItemGroup>
 </Project>

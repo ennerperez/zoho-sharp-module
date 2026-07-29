@@ -35,6 +35,7 @@ namespace Zoho.Records.Project
         string project_percent,
         string start_date,
         string status,
+        string custom_status_id,
         List<Task> tasks
     );
 

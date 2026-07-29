@@ -11,13 +11,14 @@ namespace Zoho.Interfaces
     public interface IProjectService : IZohoService
     {
         Task<T[]> GetProjects<T>(long? portalId = null);
+        Task<T[]> GetProjectsSearch<T>(string search, long? portalId);
         Task<T[]> GetTasks<T>(string projectId, long? portalId = null);
         Task<T[]> GetTaskDetails<T>(string taskId, string projectId, long? portalId = null);
         Task<T[]> GetProject<T>(string projectId, long? portalId = null);
         Task<T[]> GetSubTasks<T>(string projectId, string taskId, long? portalId = null);
         Task<T[]> GetTaskAttachments<T>(string projectId, string taskId, long? portalId = null);
         Task<Task> UpdateTask(string projectId, string taskId, object input, long? portalId = null);
-        Task<T[]> GetTasksSearch<T>(long projectId, long? portalId, string search);
+        Task<T[]> GetTasksSearch<T>(string search, string projectId, long? portalId);
 
         Task<JObject> CreatedProject(object input, long? portalId = null);
         Task<JObject> CreatedCommentTask(string projectId, string taskId, object input, long? portalId = null);

@@ -1,5 +1,4 @@
 ﻿// ReSharper disable InconsistentNaming
-
 namespace Zoho.Enums
 {
     public enum Module
@@ -30,6 +29,7 @@ namespace Zoho.Enums
         Activities,
         Projects,
         Booking,
-        Companies
+        Companies,
+        Congress,
     }
 }

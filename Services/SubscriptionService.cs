@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Zoho.Interfaces;
+using Zoho.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Zoho.Services
@@ -30,7 +31,10 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
 
             if (hostedpages)
+            {
                 return await client.InvokePostAsync(Name, "hostedpages/newsubscription", input);
+            }
+
             return await client.InvokePostAsync(Name, "subscriptions", input);
         }
 
@@ -40,6 +44,7 @@ namespace Zoho.Services
             //https://www.zohoapis.com/billing/v1/customers
             return await client.InvokePostAsync(Name, "customers", input);
         }
+
         public async Task<JObject> DeleteCustomer(string id)
         {
             var client = await _factory.CreateAsync();
@@ -60,7 +65,9 @@ namespace Zoho.Services
             var client = await _factory.CreateAsync();
             //https://www.zohoapis.com/subscriptions/v1/subscriptions/90300000079200
             if (hostedpages)
+            {
                 return await client.InvokePostAsync(Name, "hostedpages/updatesubscription", input);
+            }
 
             return await client.InvokePutAsync(Name, $"subscriptions/{subscriptionId}", input);
         }
@@ -223,21 +230,38 @@ namespace Zoho.Services
             return response;
         }
 
-        public async Task<List<JObject>> GetSubscriptions(string customerId = "")
+        public async Task<PaginatedList<JObject>> GetSubscriptions(string customerId = "", int page = 1, int pageSize = 200)
         {
-            return await GetSubscriptions<JObject>(customerId);
+            return await GetSubscriptions<JObject>(customerId, page, pageSize);
         }
 
-        public async Task<List<T>> GetSubscriptions<T>(string customerId = "")
+        public async Task<PaginatedList<T>> GetSubscriptions<T>(string customerId = "", int page = 1, int pageSize = 200)
         {
             var client = await _factory.CreateAsync();
             var url = "subscriptions";
+            var qParams = new List<string>();
             if (!string.IsNullOrWhiteSpace(customerId))
             {
-                url += $"?customer_id={customerId}";
+                qParams.Add($"customer_id={customerId}");
             }
-            var response = await client.InvokeGetAsync<T[]>(Name, url, "subscriptions");
-            return response.ToList();
+
+            if (page > 1)
+            {
+                qParams.Add($"page={page}");
+            }
+
+            if (pageSize != 200)
+            {
+                qParams.Add($"per_page={pageSize}");
+            }
+
+            if (qParams.Count != 0)
+            {
+                url += "?" + string.Join("&", qParams);
+            }
+
+            var response = await client.InvokeGetAsPaginatedListAsync<T>(Name, url, "subscriptions");
+            return response;
         }
 
         public async Task<List<JObject>> GetSubscriptionInvoice()
@@ -262,7 +286,13 @@ namespace Zoho.Services
         public async Task<JObject> CancelSubscription<T>(string subscriptionId)
         {
             var client = await _factory.CreateAsync();
-            return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{subscriptionId}/cancel");
+            return await client.InvokePostAsync<JObject>(Name, $"subscriptions/{subscriptionId}/cancel", mediaType: System.Net.Mime.MediaTypeNames.Application.FormUrlEncoded);
+        }
+
+        public async Task<JObject> DeleteSubscription<T>(string subscriptionId)
+        {
+            var client = await _factory.CreateAsync();
+            return await client.InvokeDeleteAsync<JObject>(Name, $"subscriptions/{subscriptionId}", subscriptionId, mediaType: System.Net.Mime.MediaTypeNames.Application.FormUrlEncoded);
         }
 
         public async Task<string> GetOption(string key)
